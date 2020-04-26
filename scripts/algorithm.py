@@ -2,6 +2,7 @@ import json
 import requests
 import xml.etree.ElementTree as ET
 import optparse
+import math
 
 parser = optparse.OptionParser()
 parser.add_option('-x', '--xml', action="store_true", dest="xml", default=False)
@@ -203,7 +204,10 @@ for z in range (0, sentencesAmount):
             print("Sprawdzany tekst: ", textInWindow, ", w:", windowSize, ", i:", 2**z)
             #odpalam szukanie
 
-            dependencySearch(textInWindow.split('.'), table_result, 2**z, personsTable)
+            #dependencySearch(textInWindow.split('.'), table_result, z, personsTable)
+            #dependencySearch(textInWindow.split('.'), table_result, 3**z, personsTable)
+            #dependencySearch(textInWindow.split('.'), table_result, math.factorial(z), personsTable)
+            dependencySearch(textInWindow.split('.'), table_result, (z**z), personsTable)
             #pomniejszam okno na 2 aż dojdzie do dwóch zdań
     else:
         break
