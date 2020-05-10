@@ -70,15 +70,16 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
                 table_result[i][j] += (count[i] * weight) 
                 table_result[j][i] += (count[i] * weight)  
                 
-    return table_result
+    return [table_result, personsTable]
 
 def div2method(sentencesAmount, windowSize):
     #wykorzystanie globalnej tablicy result i info
     for z in range (0, sentencesAmount):
         if int(windowSize/(2**z)) >= 1:
+            weight = 2**z
             for i in range (0, sentencesAmount-1, int(windowSize/(2**z))):
-                findPersonInWindow(i, i+int(windowSize/(2**z)), sentencesAmount)
-                #dane z tej funkcji lecą do funkcji zwiększającej relacje w tablicy globalnej
+                personsFromWindow = findPersonInWindow(i, i+int(windowSize/(2**z)), sentencesAmount)
+                increaseConnections(personsFromWindow, weight)
         else:
             break
 
@@ -125,6 +126,28 @@ def findPersonInWindow(indexStart, indexStop, max):
                         count.append(1)
     return [byty, count]
     #zwracam obie tablice
+
+def increaseConnections(personsFromWindowWithCnt, weight):
+    #print(personsFromWindowWithCnt, weight)
+    global dependendencyTable, personsTable
+    
+    byty = personsFromWindowWithCnt[0]
+    count = personsFromWindowWithCnt[1]
+    len_byt = len(byty)
+    #for i in range (0, len_byt):
+        #print(byty[i], ":", count[i])
+        
+    #print("Wykryte byty w oknie: ", byty)
+
+    for i in range (0, len_byt): #byty
+        personIndex = personsTable.index(byty[i])
+        for r in range (0, len_byt): 
+            if r != i:
+                personInRelationIndex = personsTable.index(byty[r])
+                strengthOfRelation = (count[i] * weight)
+                dependendencyTable[personIndex][personInRelationIndex] += strengthOfRelation
+                dependendencyTable[personInRelationIndex][personIndex] += strengthOfRelation
+    
     
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
 user_mail = "testo@.test.pl"
@@ -174,7 +197,9 @@ sentencesAmount = len(text.split('.')) - 1 #-1 bo split ma na końcu jeszcze ''
 windowSize = 20
 
 #robie tablice osób w całym tekście
-dependendencyTable = tableInit(info[0], info[1], info[2], info[3], weight)
+table = tableInit(info[0], info[1], info[2], info[3], weight)
+dependendencyTable = table[0]
+personsTable = table[1]
 
 for i in dependendencyTable:
     print(i)
@@ -182,5 +207,9 @@ for i in dependendencyTable:
 #analizuje tekst pod kątem okien
 div2method(sentencesAmount, windowSize)
 
-
-    #pobieram listę bytów z ilośći zdań, licze kropki
+print(personsTable)
+i = 0
+for r in dependendencyTable:
+    #print(personsTable[i], r)
+    print(r)
+    i+=1
