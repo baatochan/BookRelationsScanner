@@ -72,8 +72,59 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
                 
     return table_result
 
-def findPersonInWindow(indexStart, indexStop, textInfo):
+def div2method(sentencesAmount, windowSize):
+    #wykorzystanie globalnej tablicy result i info
+    for z in range (0, sentencesAmount):
+        if int(windowSize/(2**z)) >= 1:
+            for i in range (0, sentencesAmount-1, int(windowSize/(2**z))):
+                findPersonInWindow(i, i+int(windowSize/(2**z)), sentencesAmount)
+                #dane z tej funkcji lecą do funkcji zwiększającej relacje w tablicy globalnej
+        else:
+            break
+
+def findPersonInWindow(indexStart, indexStop, max):
+    stop = indexStop
+    start = indexStart
     
+    if indexStop > max:
+        stop = max
+    
+    #pusta tablica licznika wystąpień postaci i postaci
+    global info
+    bases = info[1]
+    poses = info[2]
+    ctag_attr = info[3]
+    
+    len_words = len(poses)
+    byty = [] 
+    count = []
+    isInWindow = False
+    dotCount = 1
+    
+    for i in range (0, len_words-1):
+        #print(poses[i], bases[i]) 
+        #brev', 'interp
+        if poses[i] == 'interp' and poses[i-1] != 'brev':
+            dotCount += 1
+        
+        if start <= dotCount:
+            isInWindow = True
+        if stop < dotCount:
+            isInWindow = False
+            break
+        
+        if isInWindow:
+            if poses[i] == 'subst':
+                if ctag_attr[i][3] == 'm1':
+                    if str(bases[i]) in byty:
+                        pI = byty.index(bases[i])
+                        count[pI] = count[pI] + 1
+                    
+                    else:
+                        byty.append(bases[i])
+                        count.append(1)
+    return [byty, count]
+    #zwracam obie tablice
     
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
 user_mail = "testo@.test.pl"
@@ -96,7 +147,7 @@ Przemek współpracuje z Pawłem.\
 Wojtek pisze jutro Kolokwium z angielskiego.\
 Przemek pisze kolokwium z Wojtkiem.\
 Bartosz zrobił już coś.\
-Bartosz zna się tylko z Pawłem.\
+Np. Bartosz zna się tylko z Pawłem.\
 Reszta grupy jest nieznana.\
 Mariusz jedzie autem Mariuszem."
 
@@ -119,7 +170,7 @@ info = getTextInf(text)
 dependendencyTable = []
 index = 0
 weight = 2**index
-sentencesAmount = len(text)
+sentencesAmount = len(text.split('.')) - 1 #-1 bo split ma na końcu jeszcze ''
 windowSize = 20
 
 #robie tablice osób w całym tekście
@@ -129,12 +180,7 @@ for i in dependendencyTable:
     print(i)
 
 #analizuje tekst pod kątem okien
-for z in range (0, sentencesAmount):
-    if int(windowSize/(2**z)) >= 2:
-        for i in range (0, sentencesAmount-1, int(windowSize/(2**z))):
-            dependencySearch(textInWindow.split('.'), table_result, (z**z), personsTable)
-    else:
-        break
+div2method(sentencesAmount, windowSize)
 
 
     #pobieram listę bytów z ilośći zdań, licze kropki
