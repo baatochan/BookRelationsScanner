@@ -34,7 +34,8 @@
     </v-app-bar>
 
     <v-content>
-      <v-container
+      <VisualiseData/>
+      <!-- <v-container
         class="fill-height"
         fluid
       >
@@ -59,7 +60,7 @@
             </v-tooltip>
           </v-col>
         </v-row>
-      </v-container>
+      </v-container> -->
     </v-content>
     <v-footer
       color="indigo"
@@ -71,10 +72,15 @@
 </template>
 
 <script>
+import VisualiseData from './VisualiseData.vue'
+
   export default {
     props: {
       source: String,
     },
+    components: {
+    VisualiseData
+  },
     data: () => ({
       drawer: null,
     }),
