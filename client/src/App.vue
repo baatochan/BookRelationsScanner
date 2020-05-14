@@ -1,19 +1,64 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
-</template>
+	<div class="app" >
+	
+		<mdb-navbar color="indigo" dark >
+		<mdb-navbar-brand href="https://mdbootstrap.com/">
+			Relacje pomiędzy bytami w tekstach literackich
+		</mdb-navbar-brand>
+		<mdb-navbar-toggler>
+		<mdb-navbar-nav>
+			<mdb-nav-item href="/">Home</mdb-nav-item>
+			<mdb-nav-item href="#/instruction">Instruction</mdb-nav-item>
+			<mdb-nav-item href="#/load-file">load-file</mdb-nav-item>
+			<mdb-nav-item href="#/graph">Graph</mdb-nav-item> 
+		</mdb-navbar-nav>
+		</mdb-navbar-toggler>
+		</mdb-navbar>
+
+			<v-content>
+				<router-view/>
+			</v-content>
+
+
+
+
+
+
+	</div>
+  </template>
+
+
+
+
+
+
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  import { mdbNavbar, mdbNavbarBrand, mdbNavbarToggler, mdbNavbarNav, mdbNavItem } from 'mdbvue';
+  export default {
+    name: 'NavbarPage',
+    components: {
+      mdbNavbar,
+      mdbNavbarBrand,
+      mdbNavbarToggler,
+      mdbNavbarNav,
+      mdbNavItem,
+	
+    }
   }
-}
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 <style>
 #app {
