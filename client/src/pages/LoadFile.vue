@@ -1,5 +1,10 @@
 <template>
 	<div id="load-file">
+		<loading :active.sync="isLoading"
+		:can-cancel="false"
+		:on-cancel="onCancel"
+		:is-full-page="fullPage"></loading>
+
 		<h1>Load text for analysis</h1>
 
 		<form id="textinput-form">
@@ -14,19 +19,44 @@
 			<!--TODO: add button for sending form-->
 		</form>
 	</div>
+
+
 </template>
 
 <script>
+import Loading from 'vue-loading-overlay';
+
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default{
-	data: () => ({ text: "" }),
+	data: () => ({ text: "", isLoading: false, fullPage: true }),
 	methods: {
 		loadTextFromFile(ev) {
+			console.log('Start loading.')
+			this.isLoading = true;
 			const file = ev.target.files[0];
 			const reader = new FileReader();
 
-			reader.onload = e => this.text = e.target.result;
-			reader.readAsText(file);
+			setTimeout(() => {
+				this.isLoading = false;
+			},5000)
+
+			reader.onloadend = e => {
+				this.text = e.target.result;
+				this.isLoading = false;
+				console.log('Reader onload called')
+			};
+			{
+				reader.readAsText(file);
+				console.log('Loading method finish')
+			}
+		},
+		onCancel() {
+			console.log('User cancelled the loader.')
 		}
+	},
+	components: {
+		Loading
 	}
 }
 </script>
