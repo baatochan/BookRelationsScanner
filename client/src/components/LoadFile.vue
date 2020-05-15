@@ -1,5 +1,7 @@
 <template>
-<h1>load file</h1>
+	<div>
+		<h1>load file</h1>
+	</div>
 </template>
 
 <script>

@@ -1,5 +1,7 @@
 <template>
-<h1>instruction</h1>
+	<div>
+		<h1>instruction</h1>
+	</div>
 </template>
 
 <script>
