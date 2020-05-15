@@ -25,7 +25,6 @@
 
 <script>
 import Loading from 'vue-loading-overlay';
-
 import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default{
@@ -39,16 +38,34 @@ export default{
 
 			setTimeout(() => {
 				this.isLoading = false;
-			},5000)
+				this.onCancel();
+			},50000)
 
-			reader.onloadend = e => {
-				this.text = e.target.result;
-				this.isLoading = false;
-				console.log('Reader onload called')
-			};
-			{
+			if (file.type.match('text/*')) {
+				console.log('text')
+
+				reader.onloadend = e => {
+					this.text = e.target.result;
+					this.isLoading = false;
+					console.log('Reader onload called')
+				};
+
 				reader.readAsText(file);
 				console.log('Loading method finish')
+			} else if (file.type.match('application/pdf')) {
+				console.log('pdf')
+
+				reader.onloadend = e => {
+					console.log(e.target.result);
+					this.isLoading = false;
+					console.log('Reader onload called')
+				};
+
+				reader.readAsDataURL(file);
+				console.log('Loading method finish')
+			} else {
+				console.log('unsupported file')
+				this.isLoading = false;
 			}
 		},
 		onCancel() {
