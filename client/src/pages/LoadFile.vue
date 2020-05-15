@@ -10,7 +10,7 @@
 		<form id="textinput-form">
 			<p><label for="textinput-textarea">Paste here book text for analysis:</label></p>
 			<textarea id="textinput-textarea" rows="10" v-model="text"></textarea>
-			<p><label for="textinput-file">or upload a file below. Supported files: txt.</label></p>
+			<p><label for="textinput-file">or upload a file below. Supported files: txt, pdf.</label></p>
 			<label id="text-reader">
 				Read File
 				<input id="textinput-file" type="file" @change="loadTextFromFile">
@@ -26,6 +26,7 @@
 <script>
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import pdfjsLib from 'pdfjs-dist';
 
 export default{
 	data: () => ({ text: "", isLoading: false, fullPage: true }),
@@ -56,8 +57,7 @@ export default{
 				console.log('pdf')
 
 				reader.onloadend = e => {
-					console.log(e.target.result);
-					this.isLoading = false;
+					this.convertPdf(e.target.result);
 					console.log('Reader onload called')
 				};
 
@@ -70,6 +70,21 @@ export default{
 		},
 		onCancel() {
 			console.log('User cancelled the loader.')
+		},
+		async convertPdf(base64EncodedPdf) {
+			var base64EncodedPdfArr = base64EncodedPdf.split(',');
+			base64EncodedPdf = base64EncodedPdfArr[1];
+			var pdfData = atob(base64EncodedPdf);
+			var pdfText = await this.getPdfText(pdfData);
+			this.text = pdfText;
+			this.isLoading = false;
+		},
+		async getPdfText(data) {
+			let doc = await pdfjsLib.getDocument({data}).promise;
+			let pageTexts = Array.from({length: doc.numPages}, async (v,i) => {
+					return (await (await doc.getPage(i+1)).getTextContent()).items.map(token => token.str).join('');
+			});
+			return (await Promise.all(pageTexts)).join('');
 		}
 	},
 	components: {
