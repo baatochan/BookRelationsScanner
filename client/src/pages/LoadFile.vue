@@ -32,7 +32,6 @@ export default{
 	data: () => ({ text: "", isLoading: false, fullPage: true }),
 	methods: {
 		loadTextFromFile(ev) {
-			console.log('Start loading.')
 			this.isLoading = true;
 			const file = ev.target.files[0];
 			const reader = new FileReader();
@@ -43,26 +42,18 @@ export default{
 			},50000)
 
 			if (file.type.match('text/*')) {
-				console.log('text')
-
 				reader.onloadend = e => {
 					this.text = e.target.result;
 					this.isLoading = false;
-					console.log('Reader onload called')
 				};
 
 				reader.readAsText(file);
-				console.log('Loading method finish')
 			} else if (file.type.match('application/pdf')) {
-				console.log('pdf')
-
 				reader.onloadend = e => {
 					this.convertPdf(e.target.result);
-					console.log('Reader onload called')
 				};
 
 				reader.readAsDataURL(file);
-				console.log('Loading method finish')
 			} else {
 				console.log('unsupported file')
 				this.isLoading = false;
