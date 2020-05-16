@@ -362,7 +362,7 @@ export default {
         d.fy = d3.event.y
       },
       nodeDragEnded(d) {
-        if (!d3.event.active) { this.simulation.alphaTarget(0.0001) }
+        if (!d3.event.active) { this.simulation.alphaTarget(0.0001) } //could be a slider
         d.fx = null
         d.fy = null
       },

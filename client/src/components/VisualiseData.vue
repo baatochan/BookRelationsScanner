@@ -7,10 +7,22 @@
           <v-btn @click="changeData()" small color="primary">Get data</v-btn>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field v-model="nodeNameA" label="Byt (usuń)"></v-text-field>
+              <v-autocomplete
+              v-model="nodeNameA"
+              :items="items"
+              dense
+              filled
+              label="Byt (usuń)"
+              ></v-autocomplete>
             </v-col>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field v-model="nodeNameB" label="Drugi byt (zachowaj)"></v-text-field>
+              <v-autocomplete
+              v-model="nodeNameB"
+              :items="items"
+              dense
+              filled
+              label="Drugi byt (zachowaj)"
+              ></v-autocomplete>
             </v-col>
           </v-row>
             <v-btn @click="mergeNodes()" small color="primary">Merge</v-btn>
@@ -32,6 +44,7 @@ export default {
       return {
         nodeNameA: null,
         nodeNameB: null,
+        items: null,
         originalData: null,
         data: null,
         changedData: null,
@@ -41,20 +54,26 @@ export default {
     },
     mounted() {
       this.changeData();
-      //this.changedData = JSON.parse(JSON.stringify(this.originalData)); //Hacky way to copy json
-      //this.data = JSON.parse(JSON.stringify(this.originalData));
     },
     methods: {
+      nodes() {
+        return this.items = this.changedData.nodes
+            .filter(d => {if(d.name === ""){ return false;} return true})
+            .map(d => d.name); //update nodes
+      },
       mergeNodes(){
         
         if (!this.exists(this.nodeNameA, this.nodeNameB)){
-          alert("Byt o takiej nazwie nie istnieje!");
+          alert("Coś nie tak");
           return;
         } 
         var indexA = this.markNode(this.nodeNameA);
         var indexB = this.getIndexOfNode(this.nodeNameB)
         this.mergeLinks(indexA, indexB); //second one stays
         this.data = JSON.parse(JSON.stringify(this.changedData)); //update the data
+        this.items = this.nodes();
+        this.nodeNameA = "";
+        this.nodeNameB = "";
       },
       mergeLinks(indexA, indexB){
         for (var i = 0; i < this.changedData.links.length; i++) { //B to target, B to mariusz Maciek-Mariusz
@@ -106,6 +125,7 @@ export default {
           this.originalData = data
           this.changedData = JSON.parse(JSON.stringify(data)); //Hacky way to copy json
           this.data = JSON.parse(JSON.stringify(data));
+          this.items = this.nodes();
           })
       }
     }
