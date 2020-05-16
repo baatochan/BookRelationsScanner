@@ -1,4 +1,5 @@
 <template>
+  <v-container fluid> 
     <div :style="{ width: width + 'px', height: height + 'px', border: '2px solid blue' }">
       <svg width="100%" height="100%">
         <defs>
@@ -11,6 +12,7 @@
         </defs>
       </svg>
     </div>
+   </v-container>  
 </template>>
 
 <script>
@@ -20,7 +22,7 @@ export default {
     props: ['data'],
     data() {
       return {
-        width: 1024,
+        width: 1500,
         height: 768,
         gridSize: 100,
         selections: {},
@@ -83,8 +85,8 @@ export default {
       },
     },
     created() {
-      this.width = window.innerWidth - 10
-      this.height = window.innerHeight - 110
+      this.width = window.innerWidth - 1000
+      this.height = window.innerHeight - 300
 
       this.simulation = d3.forceSimulation()
         .force("link", d3.forceLink())
@@ -207,6 +209,15 @@ export default {
           .attr("y", ".31em")
           .attr("text-anchor", "middle")
           .text(d => d.name)
+
+          // Deleting merged nodes
+          graph.selectAll("circle")
+          .data(this.nodes).filter(function(d) { return d.name == "dupa123"; })
+          .remove()
+
+          graph.selectAll("text")
+          .data(this.nodes).filter(function(d) { return d.name == "dupa123"; })
+          .remove()
 
         // Update caption every time data changes
         this.updateCaption()

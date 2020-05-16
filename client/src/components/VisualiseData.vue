@@ -5,7 +5,15 @@
         <v-text-field v-model="inputUrl" label="Link do testowania"></v-text-field>
         <div class="my-2">
           <v-btn @click="changeData()" small color="primary">Get data</v-btn>
-          <v-btn @click="mergeNodes()" small color="primary">Merge</v-btn>
+          <v-row>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field v-model="nodeNameA" label="Byt"></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field v-model="nodeNameB" label="Drugi byt"></v-text-field>
+            </v-col>
+          </v-row>
+            <v-btn @click="mergeNodes()" small color="primary">Merge</v-btn>
         </div>
       </div>
     </div>
@@ -22,6 +30,8 @@ export default {
     },
     data() {
       return {
+        nodeNameA: null,
+        nodeNameB: null,
         originalData: null,
         data: null,
         changedData: null,
@@ -36,13 +46,19 @@ export default {
     },
     methods: {
       mergeNodes(){
-        this.markNode("Mariusz");
-        this.mergeLinks(12, 0); //second one stays
+        
+        if (!this.exists(this.nodeNameA, this.nodeNameB)){
+          alert("Byt o takiej nazwie nie istnieje!");
+          return;
+        } 
+        var indexA = this.markNode(this.nodeNameA);
+        var indexB = this.getIndexOfNode(this.nodeNameB)
+        this.mergeLinks(indexA, indexB); //second one stays
         this.data = JSON.parse(JSON.stringify(this.changedData)); //update the data
       },
       mergeLinks(indexA, indexB){
-        var dupa = 0;
-        for (var i = 0; i < this.changedData.links.length; i++) {
+        for (var i = 0; i < this.changedData.links.length; i++) { //B to target, B to mariusz Maciek-Mariusz
+            var dupa = 0;
             if (this.changedData.links[i].source == indexA)
               dupa += 1;
             if (this.changedData.links[i].target == indexA)
@@ -56,18 +72,30 @@ export default {
               this.changedData.links[i].target = indexB
               break;
             case 3:
-              delete this.changedData.links[i]
+              this.changedData.links.splice(i, 1);
               break;
             default:
-              // not possible (i think)
+              // not possible
           }
         }
       },
-      markNode(name) {
+      exists(nameA, nameB){
+        var dupa = 0;
+        for (var i = 0; i < this.changedData.nodes.length; i++)
+          if (this.changedData.nodes[i].name == nameA || this.changedData.nodes[i].name == nameB)
+            dupa++;
+        if(dupa == 2) return true; else return false;
+      },
+      getIndexOfNode(name){
+        for (var i = 0; i < this.changedData.nodes.length; i++)
+          if (this.changedData.nodes[i].name == name)
+            return i;
+      },
+      markNode(name) { //returns node index
         for (var i = 0; i < this.changedData.nodes.length; i++) {
           if (this.changedData.nodes[i].name == name) {
             this.changedData.nodes[i].name = "dupa123";
-            return i; //returns node index
+            return i; 
           }
         }
       },
