@@ -212,11 +212,11 @@ export default {
 
           // Deleting merged nodes
           graph.selectAll("circle")
-          .data(this.nodes).filter(function(d) { return d.name == "dupa123"; })
+          .data(this.nodes).filter(function(d) { return d.name == ""; })
           .remove()
 
           graph.selectAll("text")
-          .data(this.nodes).filter(function(d) { return d.name == "dupa123"; })
+          .data(this.nodes).filter(function(d) { return d.name == ""; })
           .remove()
 
         // Update caption every time data changes

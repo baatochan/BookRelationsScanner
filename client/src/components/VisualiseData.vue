@@ -94,7 +94,7 @@ export default {
       markNode(name) { //returns node index
         for (var i = 0; i < this.changedData.nodes.length; i++) {
           if (this.changedData.nodes[i].name == name) {
-            this.changedData.nodes[i].name = "dupa123";
+            this.changedData.nodes[i].name = "";
             return i; 
           }
         }
