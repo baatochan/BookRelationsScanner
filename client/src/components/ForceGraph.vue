@@ -85,7 +85,7 @@ export default {
       },
     },
     created() {
-      this.width = window.innerWidth - 1000
+      this.width = window.innerWidth - 500
       this.height = window.innerHeight - 300
 
       this.simulation = d3.forceSimulation()
