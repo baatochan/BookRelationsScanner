@@ -76,7 +76,7 @@ export default {
         this.nodeNameB = "";
       },
       mergeLinks(indexA, indexB){
-        for (var i = 0; i < this.changedData.links.length; i++) { //B to target, B to mariusz Maciek-Mariusz
+        for (var i = 0; i < this.changedData.links.length; i++) {
             var dupa = 0;
             if (this.changedData.links[i].source == indexA)
               dupa += 1;
@@ -91,7 +91,7 @@ export default {
               this.changedData.links[i].target = indexB
               break;
             case 3:
-              this.changedData.links.splice(i, 1);
+              //this.changedData.links.splice(i, 1); dalej powoduje błędy. Na razie zostawię tak, powinno działać bez tego
               break;
             default:
               // not possible
