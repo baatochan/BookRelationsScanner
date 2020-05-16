@@ -5,7 +5,7 @@
         <v-text-field v-model="inputUrl" label="Link do testowania"></v-text-field>
         <div class="my-2">
           <v-btn @click="changeData()" small color="primary">Get data</v-btn>
-          <v-row>
+          <v-row align="center" justify="center">
             <v-col cols="12" sm="6" md="3">
               <v-autocomplete
               v-model="nodeNameA"
