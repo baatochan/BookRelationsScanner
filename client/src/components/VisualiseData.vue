@@ -7,10 +7,10 @@
           <v-btn @click="changeData()" small color="primary">Get data</v-btn>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field v-model="nodeNameA" label="Byt"></v-text-field>
+              <v-text-field v-model="nodeNameA" label="Byt (usuń)"></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field v-model="nodeNameB" label="Drugi byt"></v-text-field>
+              <v-text-field v-model="nodeNameB" label="Drugi byt (zachowaj)"></v-text-field>
             </v-col>
           </v-row>
             <v-btn @click="mergeNodes()" small color="primary">Merge</v-btn>
