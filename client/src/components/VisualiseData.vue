@@ -14,7 +14,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="text-center">
             <v-btn @click="changeData()" small color="primary">Get data</v-btn>
           </v-col>
         </v-row>
@@ -39,7 +39,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="text-center">
             <v-btn @click="mergeNodes()" small color="primary">Merge</v-btn>
           </v-col>
         </v-row>

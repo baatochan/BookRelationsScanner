@@ -4,7 +4,7 @@
     <AppBar v-bind:change-drawer="changeDrawer" />
     <v-content>
       <v-container>
-        <VisualiseData />
+        <router-view />
       </v-container>
     </v-content>
     <Footer />
@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import VisualiseData from "../components/VisualiseData.vue";
 import Menu from "../components/Layout/Menu";
 import AppBar from "../components/Layout/AppBar";
 import Footer from "../components/Layout/Footer";
@@ -24,8 +23,7 @@ export default {
   components: {
     Footer,
     AppBar,
-    Menu,
-    VisualiseData
+    Menu
   },
   data: () => ({
     drawer: false
