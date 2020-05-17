@@ -18,4 +18,4 @@ jobs:
     - name: Lint
       run: |
         cd client
-        yarn eslint
+        yarn lint
