@@ -14,9 +14,11 @@ jobs:
     - name: Install Dependency
       run: |
         cd server
-        pip install pycodestyle
         pip install -r requirements.txt
-    - name: Lint Server APP
-      run: |
-        cd server
-        pycodestyle **/*py
+    - uses: TrueBrain/actions-flake8@master
+      with:
+        path: server
+    # - name: Lint Server APP
+    #   run: |
+    #     cd server
+    #     pycodestyle **/*py
