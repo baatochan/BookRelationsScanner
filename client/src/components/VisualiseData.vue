@@ -89,8 +89,8 @@ export default {
         alert("Coś nie tak");
         return;
       }
-      var indexA = this.markNode(this.nodeNameA);
-      var indexB = this.getIndexOfNode(this.nodeNameB);
+      const indexA = this.markNode(this.nodeNameA);
+      const indexB = this.getIndexOfNode(this.nodeNameB);
       this.mergeLinks(indexA, indexB); // second one stays
       this.data = JSON.parse(JSON.stringify(this.changedData)); // update the data
       this.items = this.nodes();
@@ -98,8 +98,8 @@ export default {
       this.nodeNameB = "";
     },
     mergeLinks(indexA, indexB) {
-      for (var i = 0; i < this.changedData.links.length; i++) {
-        var dupa = 0;
+      for (let i = 0; i < this.changedData.links.length; i++) {
+        let dupa = 0;
         if (this.changedData.links[i].source === indexA) {
           dupa += 1;
         }
@@ -123,8 +123,8 @@ export default {
       }
     },
     exists(nameA, nameB) {
-      var dupa = 0;
-      for (var i = 0; i < this.changedData.nodes.length; i++) {
+      let dupa = 0;
+      for (let i = 0; i < this.changedData.nodes.length; i++) {
         if (
           this.changedData.nodes[i].name === nameA ||
           this.changedData.nodes[i].name === nameB
@@ -136,7 +136,7 @@ export default {
       else return false;
     },
     getIndexOfNode(name) {
-      for (var i = 0; i < this.changedData.nodes.length; i++) {
+      for (let i = 0; i < this.changedData.nodes.length; i++) {
         if (this.changedData.nodes[i].name === name) {
           return i;
         }
@@ -144,7 +144,7 @@ export default {
     },
     markNode(name) {
       // returns node index
-      for (var i = 0; i < this.changedData.nodes.length; i++) {
+      for (let i = 0; i < this.changedData.nodes.length; i++) {
         if (this.changedData.nodes[i].name === name) {
           this.changedData.nodes[i].name = "";
           return i;
