@@ -15,10 +15,7 @@ jobs:
       run: |
         cd server
         pip install -r requirements.txt
-    - uses: TrueBrain/actions-flake8@master
+    - name: Flake8 Server
+      uses: TrueBrain/actions-flake8@master
       with:
         path: server
-    # - name: Lint Server APP
-    #   run: |
-    #     cd server
-    #     pycodestyle **/*py
