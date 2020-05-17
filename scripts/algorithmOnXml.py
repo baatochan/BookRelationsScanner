@@ -81,6 +81,26 @@ def div2method(sentencesAmount, windowSize):
         else:
             break
 
+def floating_window(sentencesAmount):
+    windowSize = sentencesAmount
+    windowStep = 1
+    weight = 1
+    weightStep = 2
+    windowFloatStep = 1
+    # We are decreasing the window size
+    # and increasing the relation weight in each step
+    while (windowSize >= 1):
+        # Last possible position of window (due to its size)
+        lastWinPos = sentencesAmount - windowSize
+        for windowStart in range(0, lastWinPos + 1, windowFloatStep):
+            windowEnd = windowStart + windowSize - 1
+            if (windowEnd >= sentencesAmount):
+                windowEnd = sentencesAmount - 1
+            personsFromWindow = findPersonInWindow(windowStart, windowEnd, sentencesAmount)
+            increaseConnections(personsFromWindow, weight)
+        windowSize -= windowStep
+        weight *= weightStep
+
 def findPersonInWindow(indexStart, indexStop, max):
     stop = indexStop
     start = indexStart
@@ -202,7 +222,8 @@ for i in dependendencyTable:
     print(i)
 
 # analizuje tekst pod kątem okien
-div2method(sentencesAmount, windowSize)
+# div2method(sentencesAmount, windowSize)
+floating_window(sentencesAmount)
 
 print(personsTable)
 i = 0
