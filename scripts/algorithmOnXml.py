@@ -145,6 +145,55 @@ def increaseConnections(personsFromWindowWithCnt, weight):
                 strengthOfRelation = (count[i] * weight)
                 dependendencyTable[personIndex][personInRelationIndex] += strengthOfRelation
                 dependendencyTable[personInRelationIndex][personIndex] += strengthOfRelation
+                
+def parseDataFunction(dependendencyTable, personsTable):
+    print("osoby: ", personsTable)
+    print("tablica", dependendencyTable)
+    
+    # x = '{ "name":"John", "age":30, "city":"New York"}'
+    x = ''
+    x += '{' 
+    x += '"nodes": ['
+    pLen = len(personsTable)
+    for p in range (0, pLen):
+        if p != 0:
+            x += ', ' 
+        x += '{ "name": "' + personsTable[p] + '", '
+        x += '"class": "' + personClassification(dependendencyTable, personsTable)
+        x += '" }'
+        # tutaj jeszcze funkcja wyznaczjąca klasę noda
+    x += '],'
+    x += ' "links": ['
+    # tutaj łączenie lini, tylko w jedną stronę? 
+    lenP = len(personsTable)
+    lenNum = lenP
+    data = ''
+    z = 0
+    
+    for i in range(0, lenP):
+        for j in range(1+z, lenP):
+            data += '{ "source": ' + str(i) + ', "target": ' + str(j) + ', "value": ' + str(dependendencyTable[i][j]) + ', "type": "' + connectionClassification(dependendencyTable, personsTable) + '" }'
+            data += ', '
+        z += 1
+        
+    data = data[:-2]
+    x += data
+    # tutaj wyznaczania typu połączenia
+    x += '] }'
+
+    y = json.loads(x)
+    
+    print(y)
+
+def personClassification(dependendencyTable, personsTable):
+    # TO DO
+    # function to classification person occurrence
+    return 'rare'
+
+def connectionClassification(dependendencyTable, personsTable):
+    # TO DO
+    # function to classification person connection
+    return 'straight' 
 
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
 user_mail = "testo@.test.pl"
@@ -210,3 +259,6 @@ for r in dependendencyTable:
     # print(personsTable[i], r)
     print(r)
     i+=1
+
+print ("podsumowanie:")
+parseDataFunction(dependendencyTable, personsTable)
