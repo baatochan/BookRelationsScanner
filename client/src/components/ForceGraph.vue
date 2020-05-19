@@ -467,18 +467,6 @@ export default {
         "translate(" + translate + ") scale(" + transform.k + ")"
       );
       this.selections.graph.attr("transform", transform);
-
-      // Update- Sometimes it somehow hides part of the graph
-      // Define some world boundaries based on the graph total size
-      // so we don't scroll indefinitely
-      // const graphBox = this.selections.graph.node().getBBox();
-      // const margin = 200;
-      // const worldTopLeft = [graphBox.x - margin, graphBox.y - margin];
-      // const worldBottomRight = [
-      //  graphBox.x + graphBox.width + margin,
-      //  graphBox.y + graphBox.height + margin
-      // ];
-      // this.zoom.translateExtent([worldTopLeft, worldBottomRight]);
     },
     nodeDragStarted(d) {
       if (!d3.event.active) {
