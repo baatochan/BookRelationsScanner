@@ -147,10 +147,9 @@ def increaseConnections(personsFromWindowWithCnt, weight):
                 dependendencyTable[personInRelationIndex][personIndex] += strengthOfRelation
                 
 def parseDataFunction(dependendencyTable, personsTable):
-    print("osoby: ", personsTable)
-    print("tablica", dependendencyTable)
+    #print("osoby: ", personsTable)
+    #print("tablica", dependendencyTable)
     
-    # x = '{ "name":"John", "age":30, "city":"New York"}'
     x = ''
     x += '{' 
     x += '"nodes": ['
@@ -164,7 +163,7 @@ def parseDataFunction(dependendencyTable, personsTable):
         # tutaj jeszcze funkcja wyznaczjąca klasę noda
     x += '],'
     x += ' "links": ['
-    # tutaj łączenie lini, tylko w jedną stronę? 
+    
     lenP = len(personsTable)
     lenNum = lenP
     data = ''
@@ -172,13 +171,12 @@ def parseDataFunction(dependendencyTable, personsTable):
     
     for i in range(0, lenP):
         for j in range(1+z, lenP):
-            data += '{ "source": ' + str(i) + ', "target": ' + str(j) + ', "value": ' + str(dependendencyTable[i][j]) + ', "type": "' + connectionClassification(dependendencyTable, personsTable) + '" }'
+            data += '{ "source": ' + str(i) + ', "target": ' + str(j) + ', "value": ' + str(dependendencyTable[i][j]) + ', "type": "' + connectionClassification(dependendencyTable, personsTable, dependendencyTable[i][j]) + '" }'
             data += ', '
         z += 1
         
     data = data[:-2]
     x += data
-    # tutaj wyznaczania typu połączenia
     x += '] }'
 
     y = json.loads(x)
@@ -190,10 +188,30 @@ def personClassification(dependendencyTable, personsTable):
     # function to classification person occurrence
     return 'rare'
 
-def connectionClassification(dependendencyTable, personsTable):
-    # TO DO
-    # function to classification person connection
-    return 'straight' 
+def connectionClassification(dependendencyTable, personsTable, weight):
+    max = maxValOfConnection(dependendencyTable, personsTable)
+    
+    if weight > (max * 2/3):
+        return 'straight'
+    elif weight > (max * 1/3):
+        return 'dotted'
+    else:
+        return '' 
+
+def maxValOfConnection(dependendencyTable, personsTable):
+    max = 0
+    
+    lenP = len(personsTable)
+    lenNum = lenP
+    z = 0
+    
+    for i in range(0, lenP):
+        for j in range(1+z, lenP):
+            if dependendencyTable[i][j] > max:
+                max = dependendencyTable[i][j]
+        z += 1
+    
+    return max
 
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
 user_mail = "testo@.test.pl"
@@ -234,7 +252,7 @@ info = getTextInf(text)
 # print("\n")
 # print("ctag: ")
 # print(info[3])
-# print("\n")
+# print("\n")/
 
 dependendencyTable = []
 index = 0
