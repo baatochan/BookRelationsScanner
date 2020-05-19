@@ -187,9 +187,9 @@ def parseDataFunction(dependendencyTable, personsTable):
 def personClassification(dependendencyTable, personsTable, cnt):
     max = maxPersonCnt(dependendencyTable, personsTable)
     
-    if weight > (max * 2/3):
+    if cnt > (max * 2/3):
         return 'frequent'
-    elif weight > (max * 1/3):
+    elif cnt > (max * 1/3):
         return 'normal'
     else:
         return 'rare'
@@ -198,12 +198,10 @@ def personClassification(dependendencyTable, personsTable, cnt):
 def connectionClassification(dependendencyTable, personsTable, weight):
     max = maxValOfConnection(dependendencyTable, personsTable)
     
-    if weight > (max * 2/3):
+    if weight > (max * 1/2):
         return 'straight'
-    elif weight > (max * 1/3):
-        return 'dotted'
     else:
-        return '' 
+        return 'dotted'
 
 def maxValOfConnection(dependendencyTable, personsTable):
     max = 0
