@@ -64,7 +64,7 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
     for i in range (0, len_byt):				# byty
         for j in range (0, len_byt):
             if  i == j:
-                table_result[i][j] = -1
+                table_result[i][j] = 0
             else:
                 table_result[i][j] += (count[i] * weight)
                 table_result[j][i] += (count[i] * weight)
@@ -145,6 +145,7 @@ def increaseConnections(personsFromWindowWithCnt, weight):
                 strengthOfRelation = (count[i] * weight)
                 dependendencyTable[personIndex][personInRelationIndex] += strengthOfRelation
                 dependendencyTable[personInRelationIndex][personIndex] += strengthOfRelation
+                dependendencyTable[personIndex][personIndex] += count[i]
                 
 def parseDataFunction(dependendencyTable, personsTable):
     #print("osoby: ", personsTable)
@@ -158,7 +159,7 @@ def parseDataFunction(dependendencyTable, personsTable):
         if p != 0:
             x += ', ' 
         x += '{ "name": "' + personsTable[p] + '", '
-        x += '"class": "' + personClassification(dependendencyTable, personsTable)
+        x += '"class": "' + personClassification(dependendencyTable, personsTable, dependendencyTable[p][p])
         x += '" }'
         # tutaj jeszcze funkcja wyznaczjąca klasę noda
     x += '],'
@@ -183,10 +184,16 @@ def parseDataFunction(dependendencyTable, personsTable):
     
     print(y)
 
-def personClassification(dependendencyTable, personsTable):
-    # TO DO
-    # function to classification person occurrence
-    return 'rare'
+def personClassification(dependendencyTable, personsTable, cnt):
+    max = maxPersonCnt(dependendencyTable, personsTable)
+    
+    if weight > (max * 2/3):
+        return 'frequent'
+    elif weight > (max * 1/3):
+        return 'normal'
+    else:
+        return 'rare'
+    
 
 def connectionClassification(dependendencyTable, personsTable, weight):
     max = maxValOfConnection(dependendencyTable, personsTable)
@@ -210,6 +217,19 @@ def maxValOfConnection(dependendencyTable, personsTable):
             if dependendencyTable[i][j] > max:
                 max = dependendencyTable[i][j]
         z += 1
+    
+    return max
+
+def maxPersonCnt(dependendencyTable, personsTable):
+    max = 0
+    
+    lenP = len(personsTable)
+    lenNum = lenP
+    z = 0
+    
+    for i in range(0, lenP):
+        if dependendencyTable[i][i] > max:
+            max = dependendencyTable[i][i]
     
     return max
 
