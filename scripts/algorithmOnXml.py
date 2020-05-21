@@ -12,20 +12,20 @@ parser.add_option('-s', '--token-speech', action="store_true", dest="token_speec
 options, args = parser.parse_args()
 
 def ccl_orths(ccl):
-	tree = ET.fromstring(ccl)
-	return [orth.text for orth in tree.iter('orth')]
+    tree = ET.fromstring(ccl)
+    return [orth.text for orth in tree.iter('orth')]
 
 def ccl_bases(ccl):
-	tree = ET.fromstring(ccl)
-	return [tok.find('./lex/base').text for tok in tree.iter('tok')]
+    tree = ET.fromstring(ccl)
+    return [tok.find('./lex/base').text for tok in tree.iter('tok')]
 
 def ccl_poses(ccl):
-	tree = ET.fromstring(ccl)
-	return [tok.find('./lex/ctag').text.split(":")[0] for tok in tree.iter('tok')]
+    tree = ET.fromstring(ccl)
+    return [tok.find('./lex/ctag').text.split(":")[0] for tok in tree.iter('tok')]
 
 def ccl_ctag(ccl):
-	tree = ET.fromstring(ccl)
-	return [tok.find('./lex/ctag').text.split(":") for tok in tree.iter('tok')]
+    tree = ET.fromstring(ccl)
+    return [tok.find('./lex/ctag').text.split(":") for tok in tree.iter('tok')]
 
 def getTextInf(textToSend):
     payload = {'text': textToSend, 'lpmn': lpmn, 'user': user_mail}
@@ -166,58 +166,57 @@ def increaseConnections(personsFromWindowWithCnt, weight):
                 dependendencyTable[personIndex][personInRelationIndex] += strengthOfRelation
                 dependendencyTable[personInRelationIndex][personIndex] += strengthOfRelation
                 dependendencyTable[personIndex][personIndex] += count[i]
-                
+
 def parseDataFunction(dependendencyTable, personsTable):
     #print("osoby: ", personsTable)
     #print("tablica", dependendencyTable)
-    
+
     x = ''
-    x += '{' 
+    x += '{'
     x += '"nodes": ['
     pLen = len(personsTable)
     for p in range (0, pLen):
         if p != 0:
-            x += ', ' 
+            x += ', '
         x += '{ "name": "' + personsTable[p] + '", '
         x += '"class": "' + personClassification(dependendencyTable, personsTable, dependendencyTable[p][p])
         x += '" }'
         # tutaj jeszcze funkcja wyznaczjąca klasę noda
     x += '],'
     x += ' "links": ['
-    
+
     lenP = len(personsTable)
     lenNum = lenP
     data = ''
     z = 0
-    
+
     for i in range(0, lenP):
         for j in range(1+z, lenP):
             data += '{ "source": ' + str(i) + ', "target": ' + str(j) + ', "value": ' + str(dependendencyTable[i][j]) + ', "type": "' + connectionClassification(dependendencyTable, personsTable, dependendencyTable[i][j]) + '" }'
             data += ', '
         z += 1
-        
+
     data = data[:-2]
     x += data
     x += '] }'
 
     y = json.loads(x)
-    
+
     print(y)
 
 def personClassification(dependendencyTable, personsTable, cnt):
     max = maxPersonCnt(dependendencyTable, personsTable)
-    
+
     if cnt > (max * 2/3):
         return 'frequent'
     elif cnt > (max * 1/3):
         return 'normal'
     else:
         return 'rare'
-    
 
 def connectionClassification(dependendencyTable, personsTable, weight):
     max = maxValOfConnection(dependendencyTable, personsTable)
-    
+
     if weight > (max * 1/2):
         return 'straight'
     else:
@@ -225,30 +224,30 @@ def connectionClassification(dependendencyTable, personsTable, weight):
 
 def maxValOfConnection(dependendencyTable, personsTable):
     max = 0
-    
+
     lenP = len(personsTable)
     lenNum = lenP
     z = 0
-    
+
     for i in range(0, lenP):
         for j in range(1+z, lenP):
             if dependendencyTable[i][j] > max:
                 max = dependendencyTable[i][j]
         z += 1
-    
+
     return max
 
 def maxPersonCnt(dependendencyTable, personsTable):
     max = 0
-    
+
     lenP = len(personsTable)
     lenNum = lenP
     z = 0
-    
+
     for i in range(0, lenP):
         if dependendencyTable[i][i] > max:
             max = dependendencyTable[i][i]
-    
+
     return max
 
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
