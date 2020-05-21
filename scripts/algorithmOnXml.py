@@ -2,6 +2,54 @@ import json
 import requests
 import xml.etree.ElementTree as ET
 
+clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
+url = clarinpl_url + "/process"
+user_mail = "testo@.test.pl"
+# Tag and recognize named entities (coarse-grained categories)
+lpmn = 'wcrft2|liner2({"model":"top9"})'
+
+text = "Paweł robi zadanie z Przemek.\
+Przemek współpracuje z Pawłem.\
+Wojtek pisze jutro Kolokwium z angielskiego.\
+Przemek pisze kolokwium z Wojtkiem.\
+Bartosz zrobił już coś.\
+Np. Bartosz zna się tylko z Pawłem.\
+Reszta grupy jest nieznana.\
+Mariusz jedzie autem Mariuszem."
+
+def main():
+    # Get analyzed XML
+    info = getTextInf(text)
+
+    dependendencyTable = []
+    index = 0
+    weight = 2**index
+
+    # -1 because of empty string at the end of text
+    sentencesAmount = len(text.split('.')) - 1
+    windowSize = 20
+
+    # Entity matrix
+    table = tableInit(info[0], info[1], info[2], info[3], weight)
+    dependendencyTable = table[0]
+    personsTable = table[1]
+
+    for i in dependendencyTable:
+        print(i)
+
+    # Get entities relation
+    # div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
+    floating_window(info, dependendencyTable, personsTable, sentencesAmount)
+
+    print(personsTable)
+    i = 0
+    for r in dependendencyTable:
+        print(r)
+        i+=1
+
+    print("Summary:")
+    parseData(dependendencyTable, personsTable)
+
 def ccl_orths(ccl):
     tree = ET.fromstring(ccl)
     return [orth.text for orth in tree.iter('orth')]
@@ -61,20 +109,21 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
                 table_result[j][i] += (count[i] * weight)
     return [table_result, personsTable]
 
-def div2method(sentencesAmount, initWindowSize):
+def div2(info, dependendencyTable, personsTable, sentencesAmount, initWindowSize):
     # Utilising global result and info arrays
     for z in range (0, sentencesAmount):
         windowSize = int(initWindowSize / (2**z))
         if (windowSize >= 1):
             weight = 2**z
             for i in range (0, sentencesAmount - 1, windowSize):
-                personsFromWindow = findPersonInWindow(i, i + windowSize,
-                                                         sentencesAmount)
-                increaseConnections(personsFromWindow, weight)
+                personsFromWindow = findPersonInWindow(info, i, i + windowSize,
+                                                               sentencesAmount)
+                increaseConnections(dependendencyTable, personsTable,
+                                           personsFromWindow, weight)
         else:
             break
 
-def floating_window(sentencesAmount):
+def floating_window(info, dependendencyTable, personsTable, sentencesAmount):
     windowSize = sentencesAmount
     windowStep = 1
     weight = 1
@@ -89,13 +138,14 @@ def floating_window(sentencesAmount):
             windowEnd = windowStart + windowSize - 1
             if (windowEnd >= sentencesAmount):
                 windowEnd = sentencesAmount - 1
-            personsFromWindow = findPersonInWindow(windowStart, windowEnd,
-                                                          sentencesAmount)
-            increaseConnections(personsFromWindow, weight)
+            personsFromWindow = findPersonInWindow(info, windowStart, windowEnd,
+                                                                sentencesAmount)
+            increaseConnections(dependendencyTable, personsTable,
+                                       personsFromWindow, weight)
         windowSize -= windowStep
         weight *= weightStep
 
-def findPersonInWindow(indexStart, indexStop, max):
+def findPersonInWindow(info, indexStart, indexStop, max):
     stop = indexStop
     start = indexStart
 
@@ -103,7 +153,6 @@ def findPersonInWindow(indexStart, indexStop, max):
         stop = max
 
     # Empty array for entities cnt
-    global info
     bases = info[1]
     poses = info[2]
     ctag_attr = info[3]
@@ -135,22 +184,21 @@ def findPersonInWindow(indexStart, indexStop, max):
                         count.append(1)
     return [entities, count]
 
-def increaseConnections(personsFromWindowWithCnt, weight):
-    global dependendencyTable, personsTable
+def increaseConnections(dependendencyTable, personsTable, winPersonsCnt, weight):
 
-    entities = personsFromWindowWithCnt[0]
-    count = personsFromWindowWithCnt[1]
+    entities = winPersonsCnt[0]
+    count = winPersonsCnt[1]
     len_ent = len(entities)
 
     for i in range (0, len_ent):
-        personIndex = personsTable.index(entities[i])
+        person = personsTable.index(entities[i])
         for r in range (0, len_ent):
             if r != i:
-                personInRelationIndex = personsTable.index(entities[r])
-                strengthOfRelation = (count[i] * weight)
-                dependendencyTable[personIndex][personInRelationIndex] += strengthOfRelation
-                dependendencyTable[personInRelationIndex][personIndex] += strengthOfRelation
-                dependendencyTable[personIndex][personIndex] += count[i]
+                personRel = personsTable.index(entities[r])
+                relStr = (count[i] * weight)
+                dependendencyTable[person][personRel] += relStr
+                dependendencyTable[personRel][person] += relStr
+                dependendencyTable[person][person] += count[i]
 
 def parseData(dependendencyTable, personsTable):
     x = ''
@@ -237,52 +285,5 @@ def maxPersonCnt(dependendencyTable, personsTable):
 
     return max
 
-clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
-user_mail = "testo@.test.pl"
-
-url = clarinpl_url + "/process"
-
-# Tag and recognize named entities (coarse-grained categories)
-lpmn = 'wcrft2|liner2({"model":"top9"})'
-
-text = "Paweł robi zadanie z Przemek.\
-Przemek współpracuje z Pawłem.\
-Wojtek pisze jutro Kolokwium z angielskiego.\
-Przemek pisze kolokwium z Wojtkiem.\
-Bartosz zrobił już coś.\
-Np. Bartosz zna się tylko z Pawłem.\
-Reszta grupy jest nieznana.\
-Mariusz jedzie autem Mariuszem."
-
-
-# Get analyzed XML
-info = getTextInf(text)
-
-dependendencyTable = []
-index = 0
-weight = 2**index
-
-# -1 because of empty string at the end of text
-sentencesAmount = len(text.split('.')) - 1
-windowSize = 20
-
-# Entity matrix
-table = tableInit(info[0], info[1], info[2], info[3], weight)
-dependendencyTable = table[0]
-personsTable = table[1]
-
-for i in dependendencyTable:
-    print(i)
-
-# Get entities relation
-# div2method(sentencesAmount, windowSize)
-floating_window(sentencesAmount)
-
-print(personsTable)
-i = 0
-for r in dependendencyTable:
-    print(r)
-    i+=1
-
-print("Summary:")
-parseData(dependendencyTable, personsTable)
+if __name__ == "__main__":
+    main()
