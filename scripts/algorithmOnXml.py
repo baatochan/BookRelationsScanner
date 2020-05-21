@@ -45,15 +45,15 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
                     personsTable.append(bases[i])
                     count.append(1)
 
-    len_byt = len(personsTable)
-    for i in range (0, len_byt):
+    len_ent = len(personsTable)
+    for i in range (0, len_ent):
         print(personsTable[i], ":", count[i])
 
     global table_result
-    table_result = [[0 for i in range(len_byt)] for j in range(len_byt)]
+    table_result = [[0 for i in range(len_ent)] for j in range(len_ent)]
 
-    for i in range (0, len_byt):                            # entity matrix
-        for j in range (0, len_byt):
+    for i in range (0, len_ent):                            # entity matrix
+        for j in range (0, len_ent):
             if  i == j:
                 table_result[i][j] = 0
             else:
@@ -64,10 +64,10 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
 def div2method(sentencesAmount, windowSize):
     # Utilising global result and info arrays
     for z in range (0, sentencesAmount):
-        if int(windowSize/(2**z)) >= 1:
+        if int(windowSize / (2**z)) >= 1:
             weight = 2**z
-            for i in range (0, sentencesAmount-1, int(windowSize/(2**z))):
-                personsFromWindow = findPersonInWindow(i, i+int(windowSize/(2**z)), sentencesAmount)
+            for i in range (0, sentencesAmount - 1, int(windowSize / (2**z))):
+                personsFromWindow = findPersonInWindow(i, i + int(windowSize / (2**z)), sentencesAmount)
                 increaseConnections(personsFromWindow, weight)
         else:
             break
@@ -104,9 +104,8 @@ def findPersonInWindow(indexStart, indexStop, max):
     bases = info[1]
     poses = info[2]
     ctag_attr = info[3]
-
     len_words = len(poses)
-    byty = []
+    entities = []
     count = []
     isInWindow = False
     dotCount = 1
@@ -124,33 +123,33 @@ def findPersonInWindow(indexStart, indexStop, max):
         if isInWindow:
             if poses[i] == 'subst':
                 if ctag_attr[i][3] == 'm1':
-                    if str(bases[i]) in byty:
-                        pI = byty.index(bases[i])
+                    if str(bases[i]) in entities:
+                        pI = entities.index(bases[i])
                         count[pI] = count[pI] + 1
 
                     else:
-                        byty.append(bases[i])
+                        entities.append(bases[i])
                         count.append(1)
-    return [byty, count]
+    return [entities, count]
 
 def increaseConnections(personsFromWindowWithCnt, weight):
     global dependendencyTable, personsTable
 
-    byty = personsFromWindowWithCnt[0]
+    entities = personsFromWindowWithCnt[0]
     count = personsFromWindowWithCnt[1]
-    len_byt = len(byty)
+    len_ent = len(entities)
 
-    for i in range (0, len_byt):
-        personIndex = personsTable.index(byty[i])
-        for r in range (0, len_byt):
+    for i in range (0, len_ent):
+        personIndex = personsTable.index(entities[i])
+        for r in range (0, len_ent):
             if r != i:
-                personInRelationIndex = personsTable.index(byty[r])
+                personInRelationIndex = personsTable.index(entities[r])
                 strengthOfRelation = (count[i] * weight)
                 dependendencyTable[personIndex][personInRelationIndex] += strengthOfRelation
                 dependendencyTable[personInRelationIndex][personIndex] += strengthOfRelation
                 dependendencyTable[personIndex][personIndex] += count[i]
 
-def parseDataFunction(dependendencyTable, personsTable):
+def parseData(dependendencyTable, personsTable):
     x = ''
     x += '{'
     x += '"nodes": ['
@@ -283,4 +282,4 @@ for r in dependendencyTable:
     i+=1
 
 print("Summary:")
-parseDataFunction(dependendencyTable, personsTable)
+parseData(dependendencyTable, personsTable)
