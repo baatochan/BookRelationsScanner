@@ -1,15 +1,6 @@
 import json
 import requests
 import xml.etree.ElementTree as ET
-import optparse
-import math
-
-parser = optparse.OptionParser()
-parser.add_option('-x', '--xml', action="store_true", dest="xml", default=False)
-parser.add_option('-t', '--token-text', action="store_true", dest="token_text", default=False)
-parser.add_option('-b', '--token-bases', action="store_true", dest="token_bases", default=False)
-parser.add_option('-s', '--token-speech', action="store_true", dest="token_speech", default=False)
-options, args = parser.parse_args()
 
 def ccl_orths(ccl):
     tree = ET.fromstring(ccl)
@@ -61,7 +52,7 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
     global table_result
     table_result = [[0 for i in range(len_byt)] for j in range(len_byt)]
 
-    for i in range (0, len_byt):				# byty
+    for i in range (0, len_byt):                            # entity matrix
         for j in range (0, len_byt):
             if  i == j:
                 table_result[i][j] = 0
@@ -71,7 +62,7 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
     return [table_result, personsTable]
 
 def div2method(sentencesAmount, windowSize):
-    # wykorzystanie globalnej tablicy result i info
+    # Utilising global result and info arrays
     for z in range (0, sentencesAmount):
         if int(windowSize/(2**z)) >= 1:
             weight = 2**z
@@ -108,7 +99,7 @@ def findPersonInWindow(indexStart, indexStop, max):
     if indexStop > max:
         stop = max
 
-    # pusta tablica licznika wystąpień postaci i postaci
+    # Empty array for entities cnt
     global info
     bases = info[1]
     poses = info[2]
@@ -121,8 +112,6 @@ def findPersonInWindow(indexStart, indexStop, max):
     dotCount = 1
 
     for i in range (0, len_words-1):
-        # print(poses[i], bases[i])
-        # brev', 'interp
         if poses[i] == 'interp' and poses[i-1] != 'brev':
             dotCount += 1
 
@@ -143,21 +132,15 @@ def findPersonInWindow(indexStart, indexStop, max):
                         byty.append(bases[i])
                         count.append(1)
     return [byty, count]
-    # zwracam obie tablice
 
 def increaseConnections(personsFromWindowWithCnt, weight):
-    # print(personsFromWindowWithCnt, weight)
     global dependendencyTable, personsTable
 
     byty = personsFromWindowWithCnt[0]
     count = personsFromWindowWithCnt[1]
     len_byt = len(byty)
-    # for i in range (0, len_byt):
-        # print(byty[i], ":", count[i])
 
-    # print("Wykryte byty w oknie: ", byty)
-
-    for i in range (0, len_byt): #byty
+    for i in range (0, len_byt):
         personIndex = personsTable.index(byty[i])
         for r in range (0, len_byt):
             if r != i:
@@ -168,20 +151,18 @@ def increaseConnections(personsFromWindowWithCnt, weight):
                 dependendencyTable[personIndex][personIndex] += count[i]
 
 def parseDataFunction(dependendencyTable, personsTable):
-    #print("osoby: ", personsTable)
-    #print("tablica", dependendencyTable)
-
     x = ''
     x += '{'
     x += '"nodes": ['
     pLen = len(personsTable)
+
     for p in range (0, pLen):
         if p != 0:
             x += ', '
         x += '{ "name": "' + personsTable[p] + '", '
-        x += '"class": "' + personClassification(dependendencyTable, personsTable, dependendencyTable[p][p])
+        x += '"class": "' + personClassification(dependendencyTable,
+                                   personsTable, dependendencyTable[p][p])
         x += '" }'
-        # tutaj jeszcze funkcja wyznaczjąca klasę noda
     x += '],'
     x += ' "links": ['
 
@@ -192,7 +173,11 @@ def parseDataFunction(dependendencyTable, personsTable):
 
     for i in range(0, lenP):
         for j in range(1+z, lenP):
-            data += '{ "source": ' + str(i) + ', "target": ' + str(j) + ', "value": ' + str(dependendencyTable[i][j]) + ', "type": "' + connectionClassification(dependendencyTable, personsTable, dependendencyTable[i][j]) + '" }'
+            data += '{ "source": ' + str(i) + ', "target": ' + str(j) + \
+                    ', "value": ' + str(dependendencyTable[i][j]) + \
+                    ', "type": "' + \
+                    connectionClassification(dependendencyTable, personsTable,
+                                             dependendencyTable[i][j]) + '" }'
             data += ', '
         z += 1
 
@@ -258,14 +243,6 @@ url = clarinpl_url + "/process"
 # Tag and recognize named entities (coarse-grained categories)
 lpmn = 'wcrft2|liner2({"model":"top9"})'
 
-text1 = "Paweł robi zadanie z Przemek.\
-Przemek współpracuje z Pawłem.\
-Wojtek pisze jutro Kolokwium z angielskiego.\
-Przemek pisze kolokwium z Wojtkiem.\
-Bartosz zrobił już coś.\
-Bartosz zna się tylko z Pawłem.\
-Reszta grupy jest nieznana."
-
 text = "Paweł robi zadanie z Przemek.\
 Przemek współpracuje z Pawłem.\
 Wojtek pisze jutro Kolokwium z angielskiego.\
@@ -276,28 +253,18 @@ Reszta grupy jest nieznana.\
 Mariusz jedzie autem Mariuszem."
 
 
-# pobieram sobie całego xmla
+# Get analyzed XML
 info = getTextInf(text)
-# print("xml: ")
-# print(info[0])
-# print("\n")
-# print("bases: ")
-# print(info[1])
-# print("\n")
-# print("poses: ")
-# print(info[2])
-# print("\n")
-# print("ctag: ")
-# print(info[3])
-# print("\n")/
 
 dependendencyTable = []
 index = 0
 weight = 2**index
-sentencesAmount = len(text.split('.')) - 1 # -1 bo split ma na końcu jeszcze ''
+
+# -1 because of empty string at the end of text
+sentencesAmount = len(text.split('.')) - 1
 windowSize = 20
 
-# robie tablice osób w całym tekście
+# Entity matrix
 table = tableInit(info[0], info[1], info[2], info[3], weight)
 dependendencyTable = table[0]
 personsTable = table[1]
@@ -305,16 +272,15 @@ personsTable = table[1]
 for i in dependendencyTable:
     print(i)
 
-# analizuje tekst pod kątem okien
+# Get entities relation
 # div2method(sentencesAmount, windowSize)
 floating_window(sentencesAmount)
 
 print(personsTable)
 i = 0
 for r in dependendencyTable:
-    # print(personsTable[i], r)
     print(r)
     i+=1
 
-print ("podsumowanie:")
+print("Summary:")
 parseDataFunction(dependendencyTable, personsTable)
