@@ -52,7 +52,7 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
     global table_result
     table_result = [[0 for i in range(len_ent)] for j in range(len_ent)]
 
-    for i in range (0, len_ent):                            # entity matrix
+    for i in range (0, len_ent):        # entity matrix
         for j in range (0, len_ent):
             if  i == j:
                 table_result[i][j] = 0
@@ -61,13 +61,15 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
                 table_result[j][i] += (count[i] * weight)
     return [table_result, personsTable]
 
-def div2method(sentencesAmount, windowSize):
+def div2method(sentencesAmount, initWindowSize):
     # Utilising global result and info arrays
     for z in range (0, sentencesAmount):
-        if int(windowSize / (2**z)) >= 1:
+        windowSize = int(initWindowSize / (2**z))
+        if (windowSize >= 1):
             weight = 2**z
-            for i in range (0, sentencesAmount - 1, int(windowSize / (2**z))):
-                personsFromWindow = findPersonInWindow(i, i + int(windowSize / (2**z)), sentencesAmount)
+            for i in range (0, sentencesAmount - 1, windowSize):
+                personsFromWindow = findPersonInWindow(i, i + windowSize,
+                                                         sentencesAmount)
                 increaseConnections(personsFromWindow, weight)
         else:
             break
@@ -87,7 +89,8 @@ def floating_window(sentencesAmount):
             windowEnd = windowStart + windowSize - 1
             if (windowEnd >= sentencesAmount):
                 windowEnd = sentencesAmount - 1
-            personsFromWindow = findPersonInWindow(windowStart, windowEnd, sentencesAmount)
+            personsFromWindow = findPersonInWindow(windowStart, windowEnd,
+                                                          sentencesAmount)
             increaseConnections(personsFromWindow, weight)
         windowSize -= windowStep
         weight *= weightStep
