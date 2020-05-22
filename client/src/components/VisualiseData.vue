@@ -99,15 +99,15 @@ export default {
     },
     mergeLinks(indexA, indexB) {
       for (let i = 0; i < this.changedData.links.length; i++) {
-        let dupa = 0;
+        let linkType = 0;
         if (this.changedData.links[i].source === indexA) {
-          dupa += 1;
+          linkType += 1;
         }
         if (this.changedData.links[i].target === indexA) {
-          dupa += 2;
+          linkType += 2;
         }
 
-        switch (dupa) {
+        switch (linkType) {
           case 1:
             this.changedData.links[i].source = indexB;
             break;
@@ -123,16 +123,16 @@ export default {
       }
     },
     exists(nameA, nameB) {
-      let dupa = 0;
+      let occuranceCount = 0;
       for (let i = 0; i < this.changedData.nodes.length; i++) {
         if (
           this.changedData.nodes[i].name === nameA ||
           this.changedData.nodes[i].name === nameB
         ) {
-          dupa++;
+          occuranceCount++;
         }
       }
-      if (dupa === 2) return true;
+      if (occuranceCount === 2) return true;
       else return false;
     },
     getIndexOfNode(name) {

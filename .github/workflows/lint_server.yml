@@ -1,0 +1,21 @@
+name: Lint server application
+
+on: [push]  
+
+jobs:
+  server-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.6'
+    - name: Install Dependency
+      run: |
+        cd server
+        pip install -r requirements.txt
+    - name: Flake8 Server
+      uses: TrueBrain/actions-flake8@master
+      with:
+        path: server
