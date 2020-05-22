@@ -6,28 +6,50 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-
-    <h1>Load text for analysis</h1>
-
-    <form id="textinput-form">
-      <p>
-        <label for="textinput-textarea">
-          Paste here book text for analysis:
-        </label>
-      </p>
-      <textarea id="textinput-textarea" rows="10" v-model="text"></textarea>
-      <p>
-        <label for="textinput-file">
-          or upload a file below. Supported files: txt, pdf.
-        </label>
-      </p>
-      <label id="text-reader">
-        Read File
-        <input id="textinput-file" type="file" @change="loadTextFromFile" />
-      </label>
-
-      <!--TODO: add button for sending form-->
-    </form>
+    <v-row justify="center" align="center">
+      <v-row>
+        <v-col cols="12">
+          <v-row>
+            <v-col cols="12" align="center">
+              <h1>Load text for analysis</h1>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="2"></v-col>
+            <v-col cols="8" align="center">
+              <v-textarea
+                v-model="text"
+                solo
+                name="textinput-textarea"
+                id="textinput-textarea"
+                label="Paste here book text for analysis"
+              ></v-textarea>
+            </v-col>
+            <v-col cols="2"></v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" align="center">
+              <p style="margin-bottom: 10px;">
+                or upload a file below. Supported files: txt, pdf.
+              </p>
+              <label id="text-reader">
+                READ FILE
+                <input
+                  id="textinput-file"
+                  type="file"
+                  @change="loadTextFromFile"
+                />
+              </label>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" align="center">
+              <v-btn color="success">Send for analysis</v-btn>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-row>
   </div>
 </template>
 
@@ -95,19 +117,6 @@ export default {
 </script>
 
 <style>
-#load-file {
-  text-align: center;
-  padding: 10px;
-}
-
-#load-file p {
-  margin-bottom: 0;
-}
-
-#textinput-form {
-  margin-top: 50px;
-}
-
 #textinput-textarea {
   width: 60%;
   height: 500px;
@@ -117,18 +126,24 @@ export default {
   position: relative;
   overflow: hidden;
   display: inline-block;
-
-  /* Fancy button style 😎 */
-  border: 2px solid black;
   border-radius: 5px;
-  padding: 8px 12px;
+  padding: 6px 12px;
   cursor: pointer;
+  background-color: #2196f3;
+  font-size: 14px;
+  color: white;
+  font-weight: 500;
 }
+
 #text-reader input {
   position: absolute;
   top: 0;
   left: 0;
   z-index: -1;
   opacity: 0;
+}
+
+circle {
+  fill: transparent !important;
 }
 </style>
