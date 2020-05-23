@@ -17,6 +17,7 @@ Np. Bartosz zna się tylko z Pawłem.\
 Reszta grupy jest nieznana.\
 Mariusz jedzie autem Mariuszem."
 
+
 def main():
     # Get analyzed XML
     info = getTextInf(text)
@@ -24,10 +25,6 @@ def main():
     dependendencyTable = []
     index = 0
     weight = 2**index
-
-    # -1 because of empty string at the end of text
-    sentencesAmount = len(text.split('.')) - 1
-    windowSize = 20
 
     # Entity matrix
     table = tableInit(info[0], info[1], info[2], info[3], weight)
@@ -37,6 +34,10 @@ def main():
     for i in dependendencyTable:
         print(i)
 
+    # -1 because of empty string at the end of text
+    sentencesAmount = len(text.split('.')) - 1
+    # windowSize = 20
+
     # Get entities relation
     # div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
     floating_window(info, dependendencyTable, personsTable, sentencesAmount)
@@ -45,26 +46,33 @@ def main():
     i = 0
     for r in dependendencyTable:
         print(r)
-        i+=1
+        i += 1
 
     print("Summary:")
     parseData(dependendencyTable, personsTable)
+
 
 def ccl_orths(ccl):
     tree = ET.fromstring(ccl)
     return [orth.text for orth in tree.iter('orth')]
 
+
 def ccl_bases(ccl):
     tree = ET.fromstring(ccl)
     return [tok.find('./lex/base').text for tok in tree.iter('tok')]
 
+
 def ccl_poses(ccl):
     tree = ET.fromstring(ccl)
-    return [tok.find('./lex/ctag').text.split(":")[0] for tok in tree.iter('tok')]
+    return [tok.find('./lex/ctag').
+            text.split(":")[0] for tok in tree.iter('tok')]
+
 
 def ccl_ctag(ccl):
     tree = ET.fromstring(ccl)
-    return [tok.find('./lex/ctag').text.split(":") for tok in tree.iter('tok')]
+    return [tok.find('./lex/ctag').
+            text.split(":") for tok in tree.iter('tok')]
+
 
 def getTextInf(textToSend):
     payload = {'text': textToSend, 'lpmn': lpmn, 'user': user_mail}
@@ -76,14 +84,15 @@ def getTextInf(textToSend):
     poses = ccl_poses(ccl)
     ctag_attr = ccl_ctag(ccl)
 
-    return [ccl, bases, poses, ctag_attr];
+    return [ccl, bases, poses, ctag_attr]
+
 
 def tableInit(xml, bases, poses, ctag_attr, weight):
     len_words = len(poses)
     count = []
     personsTable = []
 
-    for i in range (0, len_words-1):
+    for i in range(0, len_words-1):
         if poses[i] == 'subst':
             if ctag_attr[i][3] == 'm1':
                 if str(bases[i]) in personsTable:
@@ -94,34 +103,37 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
                     count.append(1)
 
     len_ent = len(personsTable)
-    for i in range (0, len_ent):
+    for i in range(0, len_ent):
         print(personsTable[i], ":", count[i])
 
     global table_result
     table_result = [[0 for i in range(len_ent)] for j in range(len_ent)]
 
-    for i in range (0, len_ent):        # entity matrix
-        for j in range (0, len_ent):
-            if  i == j:
+    for i in range(0, len_ent):        # entity matrix
+        for j in range(0, len_ent):
+            if i == j:
                 table_result[i][j] = 0
             else:
                 table_result[i][j] += (count[i] * weight)
                 table_result[j][i] += (count[i] * weight)
     return [table_result, personsTable]
 
-def div2(info, dependendencyTable, personsTable, sentencesAmount, initWindowSize):
+
+def div2(info, dependendencyTable, personsTable,
+         sentencesAmount, initWindowSize):
     # Utilising global result and info arrays
-    for z in range (0, sentencesAmount):
+    for z in range(0, sentencesAmount):
         windowSize = int(initWindowSize / (2**z))
         if (windowSize >= 1):
             weight = 2**z
-            for i in range (0, sentencesAmount - 1, windowSize):
+            for i in range(0, sentencesAmount - 1, windowSize):
                 personsFromWindow = findPersonInWindow(info, i, i + windowSize,
-                                                               sentencesAmount)
+                                                       sentencesAmount)
                 increaseConnections(dependendencyTable, personsTable,
-                                           personsFromWindow, weight)
+                                    personsFromWindow, weight)
         else:
             break
+
 
 def floating_window(info, dependendencyTable, personsTable, sentencesAmount):
     windowSize = sentencesAmount
@@ -138,12 +150,13 @@ def floating_window(info, dependendencyTable, personsTable, sentencesAmount):
             windowEnd = windowStart + windowSize - 1
             if (windowEnd >= sentencesAmount):
                 windowEnd = sentencesAmount - 1
-            personsFromWindow = findPersonInWindow(info, windowStart, windowEnd,
-                                                                sentencesAmount)
+            personsFromWindow = findPersonInWindow(info, windowStart,
+                                                   windowEnd, sentencesAmount)
             increaseConnections(dependendencyTable, personsTable,
-                                       personsFromWindow, weight)
+                                personsFromWindow, weight)
         windowSize -= windowStep
         weight *= weightStep
+
 
 def findPersonInWindow(info, indexStart, indexStop, max):
     stop = indexStop
@@ -162,7 +175,7 @@ def findPersonInWindow(info, indexStart, indexStop, max):
     isInWindow = False
     dotCount = 1
 
-    for i in range (0, len_words-1):
+    for i in range(0, len_words-1):
         if poses[i] == 'interp' and poses[i-1] != 'brev':
             dotCount += 1
 
@@ -184,15 +197,16 @@ def findPersonInWindow(info, indexStart, indexStop, max):
                         count.append(1)
     return [entities, count]
 
-def increaseConnections(dependendencyTable, personsTable, winPersonsCnt, weight):
 
+def increaseConnections(dependendencyTable, personsTable,
+                        winPersonsCnt, weight):
     entities = winPersonsCnt[0]
     count = winPersonsCnt[1]
     len_ent = len(entities)
 
-    for i in range (0, len_ent):
+    for i in range(0, len_ent):
         person = personsTable.index(entities[i])
-        for r in range (0, len_ent):
+        for r in range(0, len_ent):
             if r != i:
                 personRel = personsTable.index(entities[r])
                 relStr = (count[i] * weight)
@@ -200,24 +214,25 @@ def increaseConnections(dependendencyTable, personsTable, winPersonsCnt, weight)
                 dependendencyTable[personRel][person] += relStr
                 dependendencyTable[person][person] += count[i]
 
+
 def parseData(dependendencyTable, personsTable):
     x = ''
     x += '{'
     x += '"nodes": ['
     pLen = len(personsTable)
 
-    for p in range (0, pLen):
+    for p in range(0, pLen):
         if p != 0:
             x += ', '
         x += '{ "name": "' + personsTable[p] + '", '
         x += '"class": "' + personClassification(dependendencyTable,
-                                   personsTable, dependendencyTable[p][p])
+                                                 personsTable,
+                                                 dependendencyTable[p][p])
         x += '" }'
     x += '],'
     x += ' "links": ['
 
     lenP = len(personsTable)
-    lenNum = lenP
     data = ''
     z = 0
 
@@ -239,6 +254,7 @@ def parseData(dependendencyTable, personsTable):
 
     print(y)
 
+
 def personClassification(dependendencyTable, personsTable, cnt):
     max = maxPersonCnt(dependendencyTable, personsTable)
 
@@ -249,6 +265,7 @@ def personClassification(dependendencyTable, personsTable, cnt):
     else:
         return 'rare'
 
+
 def connectionClassification(dependendencyTable, personsTable, weight):
     max = maxValOfConnection(dependendencyTable, personsTable)
 
@@ -257,11 +274,11 @@ def connectionClassification(dependendencyTable, personsTable, weight):
     else:
         return 'dotted'
 
+
 def maxValOfConnection(dependendencyTable, personsTable):
     max = 0
 
     lenP = len(personsTable)
-    lenNum = lenP
     z = 0
 
     for i in range(0, lenP):
@@ -272,18 +289,18 @@ def maxValOfConnection(dependendencyTable, personsTable):
 
     return max
 
+
 def maxPersonCnt(dependendencyTable, personsTable):
     max = 0
 
     lenP = len(personsTable)
-    lenNum = lenP
-    z = 0
 
     for i in range(0, lenP):
         if dependendencyTable[i][i] > max:
             max = dependendencyTable[i][i]
 
     return max
+
 
 if __name__ == "__main__":
     main()

@@ -15,7 +15,9 @@
         </v-row>
         <v-row>
           <v-col cols="12" class="text-center">
-            <v-btn @click="changeData()" small color="primary">Get data</v-btn>
+            <v-btn @click="changeData()" small color="primary">
+              Wczytaj dane
+            </v-btn>
           </v-col>
         </v-row>
         <v-row align="center" justify="center">
@@ -40,7 +42,16 @@
         </v-row>
         <v-row>
           <v-col cols="12" class="text-center">
-            <v-btn @click="mergeNodes()" small color="primary">Merge</v-btn>
+            <v-btn @click="mergeNodes()" small color="primary">
+              Połącz byty
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="text-center">
+            <v-btn @click="restore()" small color="primary">
+              Przywróć zmiany
+            </v-btn>
           </v-col>
         </v-row>
       </v-col>
@@ -61,9 +72,9 @@ export default {
       nodeNameA: null,
       nodeNameB: null,
       items: null,
-      originalData: null,
-      data: null,
-      changedData: null,
+      originalData: null, // Original data for json
+      data: null, // Separate data structure for D3
+      changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
         "https://gist.githubusercontent.com/DawidPiechota/bc9eae88413e3546e7af2a92539f30bc/raw/7a2633381f014dd12feb810e56e6702ab30914a2/data3.json",
       dataList: ["data1.json", "data2.json", "data3.json"]
@@ -154,11 +165,16 @@ export default {
     changeData() {
       // wrapper for fetch basically
       d3.json(this.inputUrl).then(data => {
-        this.originalData = data;
+        this.originalData = JSON.parse(JSON.stringify(data));
         this.changedData = JSON.parse(JSON.stringify(data)); // Hacky way to copy json
         this.data = JSON.parse(JSON.stringify(data));
         this.items = this.nodes();
       });
+    },
+    restore() {
+      this.changedData = JSON.parse(JSON.stringify(this.originalData));
+      this.data = JSON.parse(JSON.stringify(this.originalData));
+      this.items = this.nodes();
     }
   }
 };
