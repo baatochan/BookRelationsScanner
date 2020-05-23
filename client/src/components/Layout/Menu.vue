@@ -4,13 +4,25 @@
       <v-list-item link>
         <v-list-item-action> </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title>Wczytaj tekst</v-list-item-title>
+          <router-link class="RouterLink" to="/visualise-data">
+            <v-list-item-title>Visualise Data</v-list-item-title>
+          </router-link>
         </v-list-item-content>
       </v-list-item>
       <v-list-item link>
         <v-list-item-action> </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title>Zapisz graf</v-list-item-title>
+          <router-link class="RouterLink" to="/force-graph">
+            <v-list-item-title>Force Graph</v-list-item-title>
+          </router-link>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item link>
+        <v-list-item-action> </v-list-item-action>
+        <v-list-item-content>
+          <router-link class="RouterLink" to="/load-file">
+            <v-list-item-title>Load File</v-list-item-title>
+          </router-link>
         </v-list-item-content>
       </v-list-item>
     </v-list>
