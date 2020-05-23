@@ -13,5 +13,15 @@ export default {
   }
 };
 </script>
-
-<style></style>
+<style>
+.RouterLink {
+  text-decoration: none;
+  color: #000000 !important;
+}
+.toolbar-title {
+  text-decoration: none;
+  color: #ffffff !important;
+}
+.router-link-active {
+}
+</style>
