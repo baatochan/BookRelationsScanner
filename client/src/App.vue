@@ -13,13 +13,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-.RouterLink {
-  text-decoration: none;
-  color: #000000 !important;
-}
-.toolbar-title {
-  text-decoration: none;
-  color: #ffffff !important;
-}
-</style>
