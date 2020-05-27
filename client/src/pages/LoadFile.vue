@@ -116,7 +116,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #textinput-textarea {
   width: 60%;
   height: 500px;
