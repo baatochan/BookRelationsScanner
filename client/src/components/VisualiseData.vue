@@ -32,7 +32,7 @@
           </v-col>
           <v-col cols="3" class="text-center">
             <v-btn @click="saveGraphToPng()" small color="primary">
-              Zapisz Obraz
+              Zapisz graf do pliku graficznego
             </v-btn>
           </v-col>
         </v-row>
