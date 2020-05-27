@@ -7,7 +7,7 @@
         border: '2px solid blue'
       }"
     >
-      <svg width="100%" height="100%">
+      <svg width="100%" height="100%" id="forceGraph-svg">
         <defs>
           <pattern
             id="innerGrid"

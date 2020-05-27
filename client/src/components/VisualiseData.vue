@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center" align="center">
     <v-row>
-      <ForceGraph :data="data"></ForceGraph>
+      <ForceGraph v-bind:data="data" ref="forceGraph"></ForceGraph>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -14,9 +14,25 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" class="text-center">
+          <v-col cols="3" class="text-center">
             <v-btn @click="changeData()" small color="primary">
-              Wczytaj dane
+              Wczytaj dane z adresu
+            </v-btn>
+          </v-col>
+          <v-col cols="3" class="text-center">
+            <v-file-input label="Wybierz plik..." v-model="fileToUpload" />
+            <v-btn @click="loadFromFile()" small color="primary">
+              Wczytaj dane z pliku
+            </v-btn>
+          </v-col>
+          <v-col cols="3" class="text-center">
+            <v-btn @click="saveToFile()" small color="primary">
+              Zapisz dane do pliku
+            </v-btn>
+          </v-col>
+          <v-col cols="3" class="text-center">
+            <v-btn @click="saveGraphToPng()" small color="primary">
+              Zapisz Obraz
             </v-btn>
           </v-col>
         </v-row>
@@ -56,14 +72,33 @@
         </v-row>
       </v-col>
     </v-row>
+    <v-dialog v-model="isFileToUpload" max-width="300">
+      <v-card color="warning">
+        <v-card-title>Nie wybrałeś pliku!</v-card-title>
+
+        <v-card-text>
+          Aby załadować dane wybierz plik.
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="isFileToUpload = false">
+            OK
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
 <script>
 import ForceGraph from "./ForceGraph.vue";
 import * as d3 from "d3";
+import { saveAs } from "file-saver";
+import { saveSvgAsPng } from "save-svg-as-png";
 
 export default {
+  name: "VisualizeData",
   components: {
     ForceGraph
   },
@@ -77,7 +112,9 @@ export default {
       changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
         "https://gist.githubusercontent.com/DawidPiechota/bc9eae88413e3546e7af2a92539f30bc/raw/7a2633381f014dd12feb810e56e6702ab30914a2/data3.json",
-      dataList: ["data1.json", "data2.json", "data3.json"]
+      dataList: ["data1.json", "data2.json", "data3.json"],
+      fileToUpload: null,
+      isFileToUpload: null
     };
   },
   mounted() {
@@ -175,6 +212,32 @@ export default {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
       this.data = JSON.parse(JSON.stringify(this.originalData));
       this.items = this.nodes();
+    },
+    saveToFile() {
+      const blob = new Blob([JSON.stringify(this.changedData)], {
+        type: "application/json;charset=utf-8"
+      });
+      saveAs(blob, "graphData.json");
+    },
+    loadFromFile() {
+      if (this.fileToUpload) {
+        const reader = new FileReader();
+        reader.addEventListener("load", event => {
+          const tmpData = event.target.result.toString();
+          this.changedData = JSON.parse(tmpData);
+          this.originalData = JSON.parse(tmpData);
+          this.data = JSON.parse(tmpData);
+          this.items = this.nodes();
+        });
+        reader.readAsText(this.fileToUpload, "utf-8");
+      } else {
+        this.isFileToUpload = true;
+      }
+    },
+    saveGraphToPng() {
+      saveSvgAsPng(document.getElementById("forceGraph-svg"), "graph.png", {
+        backgroundColor: "white"
+      });
     }
   }
 };
