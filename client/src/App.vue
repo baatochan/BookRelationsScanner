@@ -22,6 +22,4 @@ export default {
   text-decoration: none;
   color: #ffffff !important;
 }
-.router-link-active {
-}
 </style>
