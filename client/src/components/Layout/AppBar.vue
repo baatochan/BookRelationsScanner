@@ -21,4 +21,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.toolbar-title {
+  text-decoration: none;
+  color: #ffffff !important;
+}
+</style>
