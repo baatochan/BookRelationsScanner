@@ -24,6 +24,6 @@ export default {
 <style scoped>
 .toolbar-title {
   text-decoration: none;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 </style>
