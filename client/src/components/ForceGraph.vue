@@ -220,36 +220,42 @@ export default {
       this.updateNodeLinkCount();
     },
     highlightToBeMerged() {
-      // this.simulation.nodes(this.nodes);
       const graph = this.selections.graph;
 
       switch (this.mergeFlag) {
         case true: {
           graph
             .selectAll("circle")
-            .data(this.nodes)
             .filter(d => {
+              console.log(d.name + " " + (d.name === this.nodeNameA));
               return d.name === this.nodeNameA;
             })
-            .style("fill", "red");
+            // .style("fill", "red");
+            .attr("class", "redd");
 
           graph
             .selectAll("circle")
-            .data(this.nodes)
             .filter(d => {
               return d.name === this.nodeNameB;
             })
-            .style("fill", "green");
+            // .style("fill", "green");
+            .attr("class", "greenn");
           break;
         }
         case false: {
-          // doesnt work yet
+          // this.updateData();
           graph
             .selectAll("circle")
-            .data(this.nodes)
-            .enter()
-            .append("circle")
-            .attr("r", 30)
+            .filter(d => {
+              return d.name === this.nodeNameA;
+            })
+            .attr("class", d => d.class);
+
+          graph
+            .selectAll("circle")
+            .filter(d => {
+              return d.name === this.nodeNameB;
+            })
             .attr("class", d => d.class);
           break;
         }
@@ -316,7 +322,7 @@ export default {
         .selectAll("circle")
         .data(this.nodes)
         .filter(function(d) {
-          return d.name === "";
+          return d.name === "123";
         })
         .remove();
 
@@ -324,7 +330,7 @@ export default {
         .selectAll("text")
         .data(this.nodes)
         .filter(function(d) {
-          return d.name === "";
+          return d.name === "123";
         })
         .remove();
 
@@ -640,6 +646,16 @@ circle.normal {
 }
 circle.frequent {
   fill: #003f58;
+  stroke: #001900;
+}
+
+circle.redd {
+  fill: red;
+  stroke: #001900;
+}
+
+circle.greenn {
+  fill: green;
   stroke: #001900;
 }
 

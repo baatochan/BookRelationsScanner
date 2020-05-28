@@ -50,6 +50,7 @@
               dense
               filled
               label="Byt (usuń)"
+              :disabled="!!mergeFlag"
             ></v-autocomplete>
           </v-col>
           <v-col cols="6">
@@ -59,6 +60,7 @@
               dense
               filled
               label="Drugi byt (zachowaj)"
+              :disabled="!!mergeFlag"
             ></v-autocomplete>
           </v-col>
         </v-row>
@@ -71,8 +73,8 @@
         </v-row>
         <v-row>
           <v-col cols="12" class="text-center">
-            <v-btn @click="highlightToBeMerged()" small color="primary">
-              Podświetl
+            <v-btn @click="highlightStateChange()" small color="primary">
+              {{ highlightButtonText }}
             </v-btn>
           </v-col>
         </v-row>
@@ -101,6 +103,19 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="mergeError" max-width="400">
+      <v-card color="warning">
+        <v-card-title>
+          Najpierw wpisz nazwy nazwy bytów!
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="mergeError = false">
+            OK
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
@@ -120,7 +135,9 @@ export default {
       nodeNameA: null,
       nodeNameB: null,
       mergeFlag: false,
+      mergeError: false,
       items: null,
+      highlightButtonText: "Pokaż na grafie",
       originalData: null, // Original data for json
       data: null, // Separate data structure for D3
       changedData: null, // Data to be worked with. Structure unchanged by d3
@@ -138,7 +155,7 @@ export default {
     nodes() {
       this.items = this.changedData.nodes
         .filter(d => {
-          if (d.name === "") {
+          if (d.name === "123") {
             return false;
           }
           return true;
@@ -148,16 +165,19 @@ export default {
     },
     mergeNodes() {
       if (!this.exists(this.nodeNameA, this.nodeNameB)) {
-        alert("Coś nie tak");
+        // alert("Coś nie tak");
+        this.mergeError = true;
         return;
       }
+      if (this.mergeFlag) this.highlightStateChange();
+
       const indexA = this.markNode(this.nodeNameA);
       const indexB = this.getIndexOfNode(this.nodeNameB);
       this.mergeLinks(indexA, indexB); // second one stays
       this.data = JSON.parse(JSON.stringify(this.changedData)); // update the data
       this.items = this.nodes();
-      this.nodeNameA = "";
-      this.nodeNameB = "";
+      this.nodeNameA = null;
+      this.nodeNameB = null;
     },
     mergeLinks(indexA, indexB) {
       for (let i = 0; i < this.changedData.links.length; i++) {
@@ -208,7 +228,7 @@ export default {
       // returns node index
       for (let i = 0; i < this.changedData.nodes.length; i++) {
         if (this.changedData.nodes[i].name === name) {
-          this.changedData.nodes[i].name = "";
+          this.changedData.nodes[i].name = "123";
           return i;
         }
       }
@@ -227,8 +247,24 @@ export default {
       this.data = JSON.parse(JSON.stringify(this.originalData));
       this.items = this.nodes();
     },
-    highlightToBeMerged() {
-      this.mergeFlag = !this.mergeFlag;
+    highlightStateChange() {
+      if (!this.exists(this.nodeNameA, this.nodeNameB)) {
+        // alert("Coś nie tak");
+        this.mergeError = true;
+        return;
+      }
+      switch (this.mergeFlag) {
+        case true: {
+          this.mergeFlag = false;
+          this.highlightButtonText = "Pokaż na grafie";
+          break;
+        }
+        case false: {
+          this.mergeFlag = true;
+          this.highlightButtonText = "Anuluj";
+          break;
+        }
+      }
     },
     saveToFile() {
       const blob = new Blob([JSON.stringify(this.changedData)], {
