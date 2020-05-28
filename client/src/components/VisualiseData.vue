@@ -165,7 +165,6 @@ export default {
     },
     mergeNodes() {
       if (!this.exists(this.nodeNameA, this.nodeNameB)) {
-        // alert("Coś nie tak");
         this.mergeError = true;
         return;
       }
@@ -249,7 +248,6 @@ export default {
     },
     highlightStateChange() {
       if (!this.exists(this.nodeNameA, this.nodeNameB)) {
-        // alert("Coś nie tak");
         this.mergeError = true;
         return;
       }

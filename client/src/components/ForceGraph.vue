@@ -227,10 +227,8 @@ export default {
           graph
             .selectAll("circle")
             .filter(d => {
-              console.log(d.name + " " + (d.name === this.nodeNameA));
               return d.name === this.nodeNameA;
             })
-            // .style("fill", "red");
             .attr("class", "redd");
 
           graph
@@ -238,12 +236,10 @@ export default {
             .filter(d => {
               return d.name === this.nodeNameB;
             })
-            // .style("fill", "green");
             .attr("class", "greenn");
           break;
         }
         case false: {
-          // this.updateData();
           graph
             .selectAll("circle")
             .filter(d => {
