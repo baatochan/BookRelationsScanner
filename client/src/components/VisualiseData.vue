@@ -42,6 +42,8 @@
             </v-btn>
           </v-col>
         </v-row>
+        <v-divider class="mx-4"></v-divider>
+        <v-spacer></v-spacer>
         <v-row align="center" justify="center">
           <v-col cols="6">
             <v-autocomplete
@@ -65,21 +67,17 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" class="text-center">
-            <v-btn @click="mergeNodes()" small color="primary">
-              Połącz byty
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" class="text-center">
+          <v-col cols="4" class="text-center">
             <v-btn @click="highlightStateChange()" small color="primary">
               {{ highlightButtonText }}
             </v-btn>
           </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" class="text-center">
+          <v-col cols="4" class="text-center">
+            <v-btn @click="mergeNodes()" small color="primary">
+              Połącz byty
+            </v-btn>
+          </v-col>
+          <v-col cols="4" class="text-center">
             <v-btn @click="restore()" small color="primary">
               Przywróć zmiany
             </v-btn>
