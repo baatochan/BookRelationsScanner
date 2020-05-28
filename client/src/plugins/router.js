@@ -2,7 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import Home from "../pages/Home";
 import LoadFile from "../pages/LoadFile";
-import Instruction from "../pages/Instruction";
+import ForceGraph from "../components/ForceGraph";
 import VisualiseData from "../components/VisualiseData";
 
 Vue.use(Router);
@@ -17,21 +17,20 @@ export default new Router({
     },
 
     {
-      path: "/instruction",
-      name: "Instruction",
-      component: Instruction
+      path: "/force-graph",
+      name: "ForceGraph",
+      component: ForceGraph
     },
 
+    {
+      path: "/visualise-data",
+      name: "VisualiseData",
+      component: VisualiseData
+    },
     {
       path: "/load-file",
       name: "LoadFile",
       component: LoadFile
-    },
-
-    {
-      path: "/graph",
-      name: "Graph",
-      component: VisualiseData
     }
   ]
 });

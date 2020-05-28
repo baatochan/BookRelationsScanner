@@ -1,9 +1,11 @@
 <template>
   <v-app-bar app color="indigo" dark>
     <v-app-bar-nav-icon @click.stop="changeDrawer"></v-app-bar-nav-icon>
-    <v-toolbar-title
-      >Relacje pomiędzy bytami w tekstach literackich</v-toolbar-title
-    >
+    <v-toolbar-title>
+      <router-link to="/" class="toolbar-title" exact>
+        Relacje pomiędzy bytami w tekstach literackich
+      </router-link>
+    </v-toolbar-title>
   </v-app-bar>
 </template>
 
@@ -19,4 +21,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.toolbar-title {
+  text-decoration: none;
+  color: #ffffff;
+}
+</style>
