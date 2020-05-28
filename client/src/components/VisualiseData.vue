@@ -1,7 +1,12 @@
 <template>
   <v-row justify="center" align="center">
     <v-row>
-      <ForceGraph :data="data"></ForceGraph>
+      <ForceGraph
+        :data="data"
+        :nodeNameA="nodeNameA"
+        :nodeNameB="nodeNameB"
+        :mergeFlag="mergeFlag"
+      ></ForceGraph>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -49,6 +54,13 @@
         </v-row>
         <v-row>
           <v-col cols="12" class="text-center">
+            <v-btn @click="highlightToBeMerged()" small color="primary">
+              Podświetl
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="text-center">
             <v-btn @click="restore()" small color="primary">
               Przywróć zmiany
             </v-btn>
@@ -71,6 +83,7 @@ export default {
     return {
       nodeNameA: null,
       nodeNameB: null,
+      mergeFlag: false,
       items: null,
       originalData: null, // Original data for json
       data: null, // Separate data structure for D3
@@ -175,6 +188,9 @@ export default {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
       this.data = JSON.parse(JSON.stringify(this.originalData));
       this.items = this.nodes();
+    },
+    highlightToBeMerged() {
+      this.mergeFlag = !this.mergeFlag;
     }
   }
 };

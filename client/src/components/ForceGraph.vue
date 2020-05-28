@@ -47,7 +47,7 @@
 import * as d3 from "d3";
 
 export default {
-  props: ["data"],
+  props: ["data", "nodeNameA", "nodeNameB", "mergeFlag"],
   data() {
     return {
       width: 1500,
@@ -218,6 +218,44 @@ export default {
       graph.selectAll("text").attr("transform", transform);
 
       this.updateNodeLinkCount();
+    },
+    highlightToBeMerged() {
+      // this.simulation.nodes(this.nodes);
+      const graph = this.selections.graph;
+
+      switch (this.mergeFlag) {
+        case true: {
+          graph
+            .selectAll("circle")
+            .data(this.nodes)
+            .filter(d => {
+              return d.name === this.nodeNameA;
+            })
+            .style("fill", "red");
+
+          graph
+            .selectAll("circle")
+            .data(this.nodes)
+            .filter(d => {
+              return d.name === this.nodeNameB;
+            })
+            .style("fill", "green");
+          break;
+        }
+        case false: {
+          // doesnt work yet
+          graph
+            .selectAll("circle")
+            .data(this.nodes)
+            .enter()
+            .append("circle")
+            .attr("r", 30)
+            .attr("class", d => d.class);
+          break;
+        }
+      }
+
+      // console.log(this.nodes. + this.nodeNameB);
     },
     updateData() {
       this.simulation.nodes(this.nodes);
@@ -551,6 +589,12 @@ export default {
     forceProperties: {
       handler() {
         this.updateForces();
+      },
+      deep: true
+    },
+    mergeFlag: {
+      handler() {
+        this.highlightToBeMerged();
       },
       deep: true
     }
