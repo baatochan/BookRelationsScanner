@@ -256,8 +256,6 @@ export default {
           break;
         }
       }
-
-      // console.log(this.nodes. + this.nodeNameB);
     },
     updateData() {
       this.simulation.nodes(this.nodes);
@@ -280,7 +278,7 @@ export default {
         .append("path")
         .attr("class", d => "link " + d.type)
         .attr("stroke", d => this.getRandomBlue(d)) // "#007bff")
-        .attr("stroke-width", 1); // d => Math.sqrt(d.value*2,5))//d => Math.sqrt(d.value))
+        .attr("stroke-width", 1); // d => Math.sqrt(d.value*2,5))//d => Math.sqrt(d.value)) this is for strength dependant link width
 
       // Redrawing nodes to avoid lines above them
       graph.selectAll("circle").remove();
