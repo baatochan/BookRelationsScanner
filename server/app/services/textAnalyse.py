@@ -1,5 +1,6 @@
 from flask import json
 from flask import request
+import requests
 import xml.etree.ElementTree as ET
 
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
@@ -18,7 +19,7 @@ Reszta grupy jest nieznana.\
 Mariusz jedzie autem Mariuszem."
 
 
-def main():
+def main(text):
     # Get analyzed XML
     info = getTextInf(text)
 
@@ -49,7 +50,7 @@ def main():
         i += 1
 
     print("Summary:")
-    parseData(dependendencyTable, personsTable)
+    return parseData(dependendencyTable, personsTable)
 
 
 def ccl_orths(ccl):
@@ -252,7 +253,7 @@ def parseData(dependendencyTable, personsTable):
 
     y = json.loads(x)
 
-    print(y)
+    return y
 
 
 def personClassification(dependendencyTable, personsTable, cnt):
