@@ -1,7 +1,12 @@
 <template>
   <v-row justify="center" align="center">
     <v-row>
-      <ForceGraph v-bind:data="data" ref="forceGraph"></ForceGraph>
+      <ForceGraph
+        :data="data"
+        :nodeNameA="nodeNameA"
+        :nodeNameB="nodeNameB"
+        ref="forceGraph"
+      ></ForceGraph>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -36,8 +41,10 @@
             </v-btn>
           </v-col>
         </v-row>
+        <v-divider class="mx-4"></v-divider>
+        <v-spacer></v-spacer>
         <v-row align="center" justify="center">
-          <v-col cols="6">
+          <v-col cols="3">
             <v-autocomplete
               v-model="nodeNameA"
               :items="items"
@@ -46,7 +53,7 @@
               label="Byt (usuń)"
             ></v-autocomplete>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="3">
             <v-autocomplete
               v-model="nodeNameB"
               :items="items"
@@ -55,16 +62,24 @@
               label="Drugi byt (zachowaj)"
             ></v-autocomplete>
           </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" class="text-center">
-            <v-btn @click="mergeNodes()" small color="primary">
-              Połącz byty
+          <v-col cols="3">
+            <v-btn
+              v-if="nodeNameA || nodeNameB"
+              @click="clearMergeFields()"
+              small
+              dark
+              color="primary"
+              >Wyczyść
             </v-btn>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" class="text-center">
+          <v-col cols="4" class="text-center">
+            <v-btn @click="mergeNodes()" small color="primary">
+              Połącz byty
+            </v-btn>
+          </v-col>
+          <v-col cols="4" class="text-center">
             <v-btn @click="restore()" small color="primary">
               Przywróć zmiany
             </v-btn>
@@ -88,6 +103,19 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="mergeError" max-width="400">
+      <v-card color="warning">
+        <v-card-title>
+          Najpierw wpisz nazwy nazwy bytów!
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="mergeError = false">
+            OK
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
@@ -96,6 +124,7 @@ import ForceGraph from "./ForceGraph.vue";
 import * as d3 from "d3";
 import { saveAs } from "file-saver";
 import { saveSvgAsPng } from "save-svg-as-png";
+import removedNodeTag from "../plugins/const";
 
 export default {
   name: "VisualizeData",
@@ -106,6 +135,7 @@ export default {
     return {
       nodeNameA: null,
       nodeNameB: null,
+      mergeError: false,
       items: null,
       originalData: null, // Original data for json
       data: null, // Separate data structure for D3
@@ -124,7 +154,7 @@ export default {
     nodes() {
       this.items = this.changedData.nodes
         .filter(d => {
-          if (d.name === "") {
+          if (d.name === removedNodeTag) {
             return false;
           }
           return true;
@@ -134,16 +164,17 @@ export default {
     },
     mergeNodes() {
       if (!this.exists(this.nodeNameA, this.nodeNameB)) {
-        alert("Coś nie tak");
+        this.mergeError = true;
         return;
       }
+
       const indexA = this.markNode(this.nodeNameA);
       const indexB = this.getIndexOfNode(this.nodeNameB);
       this.mergeLinks(indexA, indexB); // second one stays
       this.data = JSON.parse(JSON.stringify(this.changedData)); // update the data
       this.items = this.nodes();
-      this.nodeNameA = "";
-      this.nodeNameB = "";
+      this.nodeNameA = null;
+      this.nodeNameB = null;
     },
     mergeLinks(indexA, indexB) {
       for (let i = 0; i < this.changedData.links.length; i++) {
@@ -194,7 +225,7 @@ export default {
       // returns node index
       for (let i = 0; i < this.changedData.nodes.length; i++) {
         if (this.changedData.nodes[i].name === name) {
-          this.changedData.nodes[i].name = "";
+          this.changedData.nodes[i].name = removedNodeTag;
           return i;
         }
       }
@@ -212,6 +243,10 @@ export default {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
       this.data = JSON.parse(JSON.stringify(this.originalData));
       this.items = this.nodes();
+    },
+    clearMergeFields() {
+      this.nodeNameA = null;
+      this.nodeNameB = null;
     },
     saveToFile() {
       const blob = new Blob([JSON.stringify(this.changedData)], {

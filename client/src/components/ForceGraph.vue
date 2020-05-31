@@ -45,9 +45,10 @@
 
 <script>
 import * as d3 from "d3";
+import removedNodeTag from "../plugins/const";
 
 export default {
-  props: ["data"],
+  props: ["data", "nodeNameA", "nodeNameB"],
   data() {
     return {
       width: 1500,
@@ -219,6 +220,29 @@ export default {
 
       this.updateNodeLinkCount();
     },
+    highlightToBeMerged() {
+      const graph = this.selections.graph;
+      // Clear all highlights
+      graph.selectAll("circle").attr("class", d => d.class);
+
+      if (this.nodeNameA !== null) {
+        graph
+          .selectAll("circle")
+          .filter(d => {
+            return d.name === this.nodeNameA;
+          })
+          .attr("class", "redd");
+      }
+
+      if (this.nodeNameB !== null) {
+        graph
+          .selectAll("circle")
+          .filter(d => {
+            return d.name === this.nodeNameB;
+          })
+          .attr("class", "greenn");
+      }
+    },
     updateData() {
       this.simulation.nodes(this.nodes);
       this.simulation.force("link").links(this.links);
@@ -240,7 +264,7 @@ export default {
         .append("path")
         .attr("class", d => "link " + d.type)
         .attr("stroke", d => this.getRandomBlue(d)) // "#007bff")
-        .attr("stroke-width", 1); // d => Math.sqrt(d.value*2,5))//d => Math.sqrt(d.value))
+        .attr("stroke-width", 1); // d => Math.sqrt(d.value*2,5))//d => Math.sqrt(d.value)) this is for strength dependant link width
 
       // Redrawing nodes to avoid lines above them
       graph.selectAll("circle").remove();
@@ -278,7 +302,7 @@ export default {
         .selectAll("circle")
         .data(this.nodes)
         .filter(function(d) {
-          return d.name === "";
+          return d.name === removedNodeTag;
         })
         .remove();
 
@@ -286,7 +310,7 @@ export default {
         .selectAll("text")
         .data(this.nodes)
         .filter(function(d) {
-          return d.name === "";
+          return d.name === removedNodeTag;
         })
         .remove();
 
@@ -553,6 +577,18 @@ export default {
         this.updateForces();
       },
       deep: true
+    },
+    nodeNameA: {
+      handler() {
+        this.highlightToBeMerged();
+      },
+      deep: true
+    },
+    nodeNameB: {
+      handler() {
+        this.highlightToBeMerged();
+      },
+      deep: true
     }
   }
 };
@@ -588,15 +624,27 @@ circle {
 }
 circle.rare {
   fill: #5cd1ff;
-  stroke: #001900;
+  stroke: black;
 }
 circle.normal {
   fill: #0093ce;
-  stroke: #001900;
+  stroke: black;
 }
 circle.frequent {
   fill: #003f58;
+  stroke: black;
+}
+
+circle.redd {
+  fill: red;
   stroke: #001900;
+  animation: red-animation 0.5s 2 alternate ease-in-out;
+}
+
+circle.greenn {
+  fill: green;
+  stroke: #001900;
+  animation: green-animation 0.5s 2 alternate ease-in-out;
 }
 
 circle.selected {
@@ -613,6 +661,30 @@ circle.selected {
   to {
     stroke-width: 5px;
     r: 31;
+  }
+}
+@keyframes red-animation {
+  from {
+    stroke-width: 1px;
+    stroke: black;
+    r: 30;
+  }
+  to {
+    stroke-width: 4px;
+    stroke: red;
+    r: 32;
+  }
+}
+@keyframes green-animation {
+  from {
+    stroke-width: 1px;
+    stroke: black;
+    r: 30;
+  }
+  to {
+    stroke-width: 4px;
+    stroke: green;
+    r: 32;
   }
 }
 
