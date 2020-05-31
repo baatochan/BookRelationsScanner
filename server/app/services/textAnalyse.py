@@ -304,4 +304,4 @@ def maxPersonCnt(dependendencyTable, personsTable):
 
 
 if __name__ == "__main__":
-    main()
+    main(text)
