@@ -66,12 +66,10 @@
             <v-btn
               v-if="nodeNameA || nodeNameB"
               @click="clearMergeFields()"
-              fab
-              x-small
+              small
               dark
               color="primary"
-              :disabled="!nodeNameA && !nodeNameB"
-              >x
+              >Wyczyść
             </v-btn>
           </v-col>
         </v-row>

@@ -624,25 +624,27 @@ circle {
 }
 circle.rare {
   fill: #5cd1ff;
-  stroke: #001900;
+  stroke: black;
 }
 circle.normal {
   fill: #0093ce;
-  stroke: #001900;
+  stroke: black;
 }
 circle.frequent {
   fill: #003f58;
-  stroke: #001900;
+  stroke: black;
 }
 
 circle.redd {
   fill: red;
   stroke: #001900;
+  animation: red-animation 0.5s 2 alternate ease-in-out;
 }
 
 circle.greenn {
   fill: green;
   stroke: #001900;
+  animation: green-animation 0.5s 2 alternate ease-in-out;
 }
 
 circle.selected {
@@ -659,6 +661,30 @@ circle.selected {
   to {
     stroke-width: 5px;
     r: 31;
+  }
+}
+@keyframes red-animation {
+  from {
+    stroke-width: 1px;
+    stroke: black;
+    r: 30;
+  }
+  to {
+    stroke-width: 4px;
+    stroke: red;
+    r: 32;
+  }
+}
+@keyframes green-animation {
+  from {
+    stroke-width: 1px;
+    stroke: black;
+    r: 30;
+  }
+  to {
+    stroke-width: 4px;
+    stroke: green;
+    r: 32;
   }
 }
 
