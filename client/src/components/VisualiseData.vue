@@ -5,7 +5,6 @@
         :data="data"
         :nodeNameA="nodeNameA"
         :nodeNameB="nodeNameB"
-        :mergeFlag="mergeFlag"
         ref="forceGraph"
       ></ForceGraph>
     </v-row>
@@ -52,7 +51,6 @@
               dense
               filled
               label="Byt (usuń)"
-              :disabled="!!mergeFlag"
             ></v-autocomplete>
           </v-col>
           <v-col cols="6">
@@ -62,14 +60,13 @@
               dense
               filled
               label="Drugi byt (zachowaj)"
-              :disabled="!!mergeFlag"
             ></v-autocomplete>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="4" class="text-center">
-            <v-btn @click="highlightStateChange()" small color="primary">
-              {{ highlightButtonText }}
+            <v-btn @click="clearMergeFields()" small color="primary">
+              Anuluj
             </v-btn>
           </v-col>
           <v-col cols="4" class="text-center">
@@ -122,6 +119,7 @@ import ForceGraph from "./ForceGraph.vue";
 import * as d3 from "d3";
 import { saveAs } from "file-saver";
 import { saveSvgAsPng } from "save-svg-as-png";
+import removedNodeTag from "../plugins/const";
 
 export default {
   name: "VisualizeData",
@@ -132,10 +130,8 @@ export default {
     return {
       nodeNameA: null,
       nodeNameB: null,
-      mergeFlag: false,
       mergeError: false,
       items: null,
-      highlightButtonText: "Pokaż na grafie",
       originalData: null, // Original data for json
       data: null, // Separate data structure for D3
       changedData: null, // Data to be worked with. Structure unchanged by d3
@@ -153,7 +149,7 @@ export default {
     nodes() {
       this.items = this.changedData.nodes
         .filter(d => {
-          if (d.name === "123") {
+          if (d.name === removedNodeTag) {
             return false;
           }
           return true;
@@ -166,7 +162,6 @@ export default {
         this.mergeError = true;
         return;
       }
-      if (this.mergeFlag) this.highlightStateChange();
 
       const indexA = this.markNode(this.nodeNameA);
       const indexB = this.getIndexOfNode(this.nodeNameB);
@@ -225,7 +220,7 @@ export default {
       // returns node index
       for (let i = 0; i < this.changedData.nodes.length; i++) {
         if (this.changedData.nodes[i].name === name) {
-          this.changedData.nodes[i].name = "123";
+          this.changedData.nodes[i].name = removedNodeTag;
           return i;
         }
       }
@@ -244,23 +239,9 @@ export default {
       this.data = JSON.parse(JSON.stringify(this.originalData));
       this.items = this.nodes();
     },
-    highlightStateChange() {
-      if (!this.exists(this.nodeNameA, this.nodeNameB)) {
-        this.mergeError = true;
-        return;
-      }
-      switch (this.mergeFlag) {
-        case true: {
-          this.mergeFlag = false;
-          this.highlightButtonText = "Pokaż na grafie";
-          break;
-        }
-        case false: {
-          this.mergeFlag = true;
-          this.highlightButtonText = "Anuluj";
-          break;
-        }
-      }
+    clearMergeFields() {
+      this.nodeNameA = null;
+      this.nodeNameB = null;
     },
     saveToFile() {
       const blob = new Blob([JSON.stringify(this.changedData)], {

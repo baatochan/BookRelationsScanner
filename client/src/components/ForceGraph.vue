@@ -45,9 +45,10 @@
 
 <script>
 import * as d3 from "d3";
+import removedNodeTag from "../plugins/const";
 
 export default {
-  props: ["data", "nodeNameA", "nodeNameB", "mergeFlag"],
+  props: ["data", "nodeNameA", "nodeNameB"],
   data() {
     return {
       width: 1500,
@@ -221,40 +222,25 @@ export default {
     },
     highlightToBeMerged() {
       const graph = this.selections.graph;
+      // Clear all highlights
+      graph.selectAll("circle").attr("class", d => d.class);
 
-      switch (this.mergeFlag) {
-        case true: {
-          graph
-            .selectAll("circle")
-            .filter(d => {
-              return d.name === this.nodeNameA;
-            })
-            .attr("class", "redd");
+      if (this.nodeNameA !== null) {
+        graph
+          .selectAll("circle")
+          .filter(d => {
+            return d.name === this.nodeNameA;
+          })
+          .attr("class", "redd");
+      }
 
-          graph
-            .selectAll("circle")
-            .filter(d => {
-              return d.name === this.nodeNameB;
-            })
-            .attr("class", "greenn");
-          break;
-        }
-        case false: {
-          graph
-            .selectAll("circle")
-            .filter(d => {
-              return d.name === this.nodeNameA;
-            })
-            .attr("class", d => d.class);
-
-          graph
-            .selectAll("circle")
-            .filter(d => {
-              return d.name === this.nodeNameB;
-            })
-            .attr("class", d => d.class);
-          break;
-        }
+      if (this.nodeNameB !== null) {
+        graph
+          .selectAll("circle")
+          .filter(d => {
+            return d.name === this.nodeNameB;
+          })
+          .attr("class", "greenn");
       }
     },
     updateData() {
@@ -316,7 +302,7 @@ export default {
         .selectAll("circle")
         .data(this.nodes)
         .filter(function(d) {
-          return d.name === "123";
+          return d.name === removedNodeTag;
         })
         .remove();
 
@@ -324,7 +310,7 @@ export default {
         .selectAll("text")
         .data(this.nodes)
         .filter(function(d) {
-          return d.name === "123";
+          return d.name === removedNodeTag;
         })
         .remove();
 
@@ -592,7 +578,13 @@ export default {
       },
       deep: true
     },
-    mergeFlag: {
+    nodeNameA: {
+      handler() {
+        this.highlightToBeMerged();
+      },
+      deep: true
+    },
+    nodeNameB: {
       handler() {
         this.highlightToBeMerged();
       },
