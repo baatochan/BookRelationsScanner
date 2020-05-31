@@ -1,5 +1,4 @@
-from flask import Blueprint
+from app.services.app import app
+from . import algorithm
 
-controllers = Blueprint('controllers', __name__)
-
-from . import routes
+app.add_url_rule('/przemek/', view_func=algorithm.Algorithm.as_view('przemek'))

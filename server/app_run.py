@@ -1,5 +1,6 @@
 import click
-from app import app
+from app.services.app import app as flask_app
+import app
 
 
 @click.group()
@@ -9,8 +10,8 @@ def cli():
 
 @cli.command()
 def run():
-    app.app_context().push()
-    app.run()
+    flask_app.app_context().push()
+    flask_app.run(debug=True)
 
 
 if __name__ == '__main__':

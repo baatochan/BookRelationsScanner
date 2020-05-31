@@ -1,5 +1,5 @@
-import json
-import requests
+from flask import json
+from flask import request
 import xml.etree.ElementTree as ET
 
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
