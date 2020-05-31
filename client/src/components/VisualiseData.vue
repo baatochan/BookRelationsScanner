@@ -44,7 +44,7 @@
         <v-divider class="mx-4"></v-divider>
         <v-spacer></v-spacer>
         <v-row align="center" justify="center">
-          <v-col cols="6">
+          <v-col cols="3">
             <v-autocomplete
               v-model="nodeNameA"
               :items="items"
@@ -53,7 +53,7 @@
               label="Byt (usuń)"
             ></v-autocomplete>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="3">
             <v-autocomplete
               v-model="nodeNameB"
               :items="items"
@@ -62,13 +62,20 @@
               label="Drugi byt (zachowaj)"
             ></v-autocomplete>
           </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="4" class="text-center">
-            <v-btn @click="clearMergeFields()" small color="primary">
-              Anuluj
+          <v-col cols="3">
+            <v-btn
+              v-if="nodeNameA || nodeNameB"
+              @click="clearMergeFields()"
+              fab
+              x-small
+              dark
+              color="primary"
+              :disabled="!nodeNameA && !nodeNameB"
+              >x
             </v-btn>
           </v-col>
+        </v-row>
+        <v-row>
           <v-col cols="4" class="text-center">
             <v-btn @click="mergeNodes()" small color="primary">
               Połącz byty
