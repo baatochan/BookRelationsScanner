@@ -1,1 +1,5 @@
-import app.controllers
+from app.controllers import init_routes
+
+
+def init_app():
+    init_routes()
