@@ -1,6 +1,6 @@
 import click
 from app.services.app import app as flask_app
-import app
+from app import init_app
 
 
 @click.group()
@@ -11,6 +11,7 @@ def cli():
 @cli.command()
 def run():
     flask_app.app_context().push()
+    init_app()
     flask_app.run(debug=True)
 
 
