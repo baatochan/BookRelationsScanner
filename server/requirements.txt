@@ -2,3 +2,4 @@ Flask
 Flask-SQLAlchemy
 click
 flake8
+requests
