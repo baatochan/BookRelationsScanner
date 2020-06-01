@@ -1,12 +1,12 @@
-###Installation and start
+### Installation and start
 1. Create venv
 2. install all libraries
 3. Lunch with `python app_run.py run`
 
-###Commands
+### Commands
 `run` - lunches app
 
-###Folders
+### Folders
 `app` - main app module, contains flask app object and db object
 `configs` - configs
 `app/controllers` - controllers
