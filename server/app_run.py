@@ -2,6 +2,7 @@ import click
 from app.services.app import app as flask_app
 import app
 
+
 @click.group()
 def cli():
     pass
