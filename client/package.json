@@ -9,6 +9,7 @@
     "lint-fix": "eslint --ext .js,.vue src --fix"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "d3": "^5.16.0",
     "file-saver": "^2.0.2",
