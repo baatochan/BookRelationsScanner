@@ -155,6 +155,19 @@ export default {
       .attr("text-anchor", "left");
   },
   methods: {
+    nodeColor(percent) {
+      return (
+        "#" +
+        (
+          (1 << 24) +
+          ((255 - Math.floor((percent / 100.0) * 255.0)) << 16) +
+          ((255 - Math.floor((136 * percent) / 100)) << 8) +
+          255
+        )
+          .toString(16)
+          .slice(1)
+      );
+    },
     getRandomBlue(d) {
       if (d.value < 5) return "#b0e4ff";
       else if (d.value < 30) return "#8cd7ff";
@@ -245,7 +258,8 @@ export default {
         .enter()
         .append("circle")
         .attr("r", 30)
-        // .attr("class", d => d.class)
+        .attr("class", "circle")
+        .attr("fill", d => this.nodeColor(d.occurrence))
         .call(
           d3
             .drag()
@@ -472,7 +486,6 @@ export default {
 }
 
 circle {
-  fill: #001aff;
   stroke: black;
   stroke-width: 1.5px;
 }
