@@ -105,9 +105,9 @@ export default {
       const pageTexts = Array.from({ length: doc.numPages }, async (v, i) => {
         return (await (await doc.getPage(i + 1)).getTextContent()).items
           .map(token => token.str)
-          .join("");
+          .join(" ");
       });
-      return (await Promise.all(pageTexts)).join("");
+      return (await Promise.all(pageTexts)).join("\n");
     }
   },
   components: {
