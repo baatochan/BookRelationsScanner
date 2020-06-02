@@ -14,7 +14,22 @@
               <h1>Load text for analysis</h1>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row v-show="isErrorResponse">
+            <v-col cols="12" align="center">
+              <p style="color:red;">
+                There was an error while sending your data. Try again.
+              </p>
+            </v-col>
+          </v-row>
+          <v-row v-show="isSuccessfulResponse">
+            <v-col cols="12" align="center">
+              <p>
+                Your data has been successfully submitted. It will be available
+                when processed here.
+              </p>
+            </v-col>
+          </v-row>
+          <v-row v-show="isInputBoxShown">
             <v-col cols="2"></v-col>
             <v-col cols="8" align="center">
               <v-textarea
@@ -27,7 +42,7 @@
             </v-col>
             <v-col cols="2"></v-col>
           </v-row>
-          <v-row>
+          <v-row v-show="isInputBoxShown">
             <v-col cols="12" align="center">
               <p style="margin-bottom: 10px;">
                 or upload a file below. Supported files: txt, pdf.
@@ -42,9 +57,11 @@
               </label>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row v-show="isInputBoxShown">
             <v-col cols="12" align="center">
-              <v-btn color="success">Send for analysis</v-btn>
+              <v-btn color="success" v-on:click="submitData"
+                >Send for analysis</v-btn
+              >
             </v-col>
           </v-row>
         </v-col>
@@ -57,9 +74,18 @@
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 import pdfjsLib from "pdfjs-dist";
+import axios from "axios";
 
 export default {
-  data: () => ({ text: "", isLoading: false, fullPage: true }),
+  data: () => ({
+    text: "",
+    isLoading: false,
+    fullPage: true,
+    isInputBoxShown: true,
+    isErrorResponse: false,
+    isSuccessfulResponse: false,
+    submissionId: -1
+  }),
   methods: {
     loadTextFromFile(ev) {
       this.isLoading = true;
@@ -108,6 +134,34 @@ export default {
           .join(" ");
       });
       return (await Promise.all(pageTexts)).join("\n");
+    },
+    submitData(ev) {
+      this.isLoading = true;
+      this.isInputBoxShown = false;
+      this.isErrorResponse = false;
+      return axios
+        .post(
+          "http://127.0.0.1:5000/methodOne",
+          { text: this.text },
+          {
+            headers: {
+              "Content-type": "application/json"
+            }
+          }
+        )
+        .then(response => {
+          this.submissionId = response.data.id;
+          console.log("response: " + JSON.stringify(response.data, null, 2));
+          console.log(this.submissionId);
+          this.isSuccessfulResponse = true;
+          this.isLoading = false;
+        })
+        .catch(error => {
+          console.log("error: " + error);
+          this.isInputBoxShown = true;
+          this.isErrorResponse = true;
+          this.isLoading = false;
+        });
     }
   },
   components: {
