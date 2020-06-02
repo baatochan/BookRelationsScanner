@@ -56,6 +56,7 @@ export default {
       gridSize: 100,
       selections: {},
       simulation: null,
+      hippieMode: false,
       forceProperties: {
         center: {
           x: 0.5,
@@ -168,6 +169,19 @@ export default {
           .slice(1)
       );
     },
+    nodeColor2(percent) {
+      return (
+        "#" +
+        (
+          (1 << 24) +
+          ((255 - Math.floor((percent / 100.0) * 255.0)) << 16) +
+          ((136 + Math.floor((percent / 100) * (255 - 136))) << 8) +
+          255
+        )
+          .toString(16)
+          .slice(1)
+      );
+    },
     getRandomBlue(d) {
       if (d.value < 5) return "#b0e4ff";
       else if (d.value < 30) return "#8cd7ff";
@@ -259,7 +273,10 @@ export default {
         .append("circle")
         .attr("r", 30)
         .attr("class", "circle")
-        .attr("fill", d => this.nodeColor(d.occurrence))
+        .attr("fill", d => {
+          if (this.hippieMode) return this.nodeColor2(d.occurrence);
+          else return this.nodeColor(d.occurrence);
+        })
         .call(
           d3
             .drag()
@@ -444,6 +461,8 @@ export default {
       const circle = this.selections.graph.selectAll("circle");
       circle.classed("selected", false);
       circle.filter(td => td === d).classed("selected", true);
+      this.hippieMode = !this.hippieMode;
+      this.updateData();
     }
   },
   watch: {
