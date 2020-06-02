@@ -27,15 +27,15 @@
 	```
 
 ### Commands
-`run` - lunches app
+* `run` - lunches app
 
 ### Available endpoints
 Available endpoints are defined in [app/controllers/\_\_init\_\_.py](app/controllers/__init__.py).
 
 ### Folders
-`app` - main app module, contains flask app object and db object
-`configs` - configs
-`app/controllers` - controllers
-`app/helpers` - for wrappers and other classes/functions
-`app/models` - definition of db models
-`app/services` - main app logic, controllers uses services
+* `app` - main app module, contains flask app object and db object
+* `configs` - configs
+* `app/controllers` - controllers
+* `app/helpers` - for wrappers and other classes/functions
+* `app/models` - definition of db models
+* `app/services` - main app logic, controllers uses services
