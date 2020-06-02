@@ -169,7 +169,7 @@ export default {
           .slice(1)
       );
     },
-    nodeColor2(percent) {
+    nicerNodeColor(percent) {
       return (
         "#" +
         (
@@ -181,13 +181,6 @@ export default {
           .toString(16)
           .slice(1)
       );
-    },
-    getRandomBlue(d) {
-      if (d.value < 5) return "#b0e4ff";
-      else if (d.value < 30) return "#8cd7ff";
-      else if (d.value < 40) return "#66caff";
-      else if (d.value < 50) return "#1cb0ff";
-      else return "#00a4fc";
     },
     tick() {
       // If no data is passed to the Vue component, do nothing
@@ -248,21 +241,18 @@ export default {
       const simulation = this.simulation;
       const graph = this.selections.graph;
 
-      // Links should only exit if not needed anymore
-      graph
-        .selectAll("path")
-        .data(this.links)
-        .exit()
-        .remove();
-
+      graph.selectAll("path").remove();
       graph
         .selectAll("path")
         .data(this.links)
         .enter()
         .append("path")
-        // .attr("class", d => "link " + d.type)
-        .attr("stroke", d => this.getRandomBlue(d)) // "#007bff")
-        .attr("stroke-width", d => Math.sqrt(d.value / 4)); // d => Math.sqrt(d.value*2,5))//d => Math.sqrt(d.value)) this is for strength dependant link width
+        .attr("stroke", d => {
+          if (this.hippieMode)
+            return this.nicerNodeColor(Math.max(15, d.value));
+          else return this.nodeColor(Math.max(15, d.value));
+        })
+        .attr("stroke-width", d => Math.sqrt(d.value / 4));
 
       // Redrawing nodes to avoid lines above them
       graph.selectAll("circle").remove();
@@ -274,7 +264,7 @@ export default {
         .attr("r", 30)
         .attr("class", "circle")
         .attr("fill", d => {
-          if (this.hippieMode) return this.nodeColor2(d.occurrence);
+          if (this.hippieMode) return this.nicerNodeColor(d.occurrence);
           else return this.nodeColor(d.occurrence);
         })
         .call(

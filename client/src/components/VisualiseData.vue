@@ -163,7 +163,7 @@ export default {
       data: null, // Separate data structure for D3
       changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
-        "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/faeb74ae87eebd9bb46b6e061b83cfd810950c2c/data3NoTypes.json",
+        "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/0ecace4aed4f770b3d80f1d57095715f1af66885/data3NoTypes.json",
       fileToUpload: null,
       isFileToUpload: null
     };
@@ -174,7 +174,7 @@ export default {
       if (this.data && this.data.nodes && this.data.links) {
         filteredData.nodes = this.data.nodes;
         filteredData.links = this.data.links.filter(item => {
-          return item.value < this.sliderEdges;
+          return item.value <= this.sliderEdges;
         });
         return filteredData;
       }
