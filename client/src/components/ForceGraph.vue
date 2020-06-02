@@ -194,7 +194,7 @@ export default {
     highlightToBeMerged() {
       const graph = this.selections.graph;
       // Clear all highlights
-      graph.selectAll("circle").attr("class", d => d.class);
+      graph.selectAll("circle").attr("class", "circle");
 
       if (this.nodeNameA !== null) {
         graph
@@ -233,7 +233,7 @@ export default {
         .data(this.links)
         .enter()
         .append("path")
-        .attr("class", d => "link " + d.type)
+        // .attr("class", d => "link " + d.type)
         .attr("stroke", d => this.getRandomBlue(d)) // "#007bff")
         .attr("stroke-width", 1); // d => Math.sqrt(d.value*2,5))//d => Math.sqrt(d.value)) this is for strength dependant link width
 
@@ -245,7 +245,7 @@ export default {
         .enter()
         .append("circle")
         .attr("r", 30)
-        .attr("class", d => d.class)
+        // .attr("class", d => d.class)
         .call(
           d3
             .drag()
@@ -471,35 +471,10 @@ export default {
   opacity: 1;
 }
 
-/*path.link {
-    fill: none;
-    stroke: #666;
-    stroke-width: 1.5px;
-  }
-  path.link.dotted {
-    stroke: #005900;
-    stroke-dasharray: 5, 2;
-  }
-  path.link.straight {
-    stroke: #7f3f00;
-  }*/
-
 circle {
   fill: #001aff;
-  stroke: #191900;
+  stroke: black;
   stroke-width: 1.5px;
-}
-circle.rare {
-  fill: #5cd1ff;
-  stroke: black;
-}
-circle.normal {
-  fill: #0093ce;
-  stroke: black;
-}
-circle.frequent {
-  fill: #003f58;
-  stroke: black;
 }
 
 circle.redd {
@@ -554,7 +529,6 @@ circle.selected {
     r: 32;
   }
 }
-
 text {
   font: 10px arial;
   pointer-events: none;
