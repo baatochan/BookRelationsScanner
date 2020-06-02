@@ -74,13 +74,13 @@ export default {
           radius: 35
         },
         forceX: {
-          enabled: false,
-          strength: 0.05,
+          enabled: true,
+          strength: 0.03,
           x: 0.5
         },
         forceY: {
-          enabled: false,
-          strength: 0.35,
+          enabled: true,
+          strength: 0.03,
           y: 0.5
         },
         link: {
