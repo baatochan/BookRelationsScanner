@@ -163,7 +163,7 @@ export default {
       data: null, // Separate data structure for D3
       changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
-        "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/bfdcaffe0bd1ec9bc756ecc80655f6ee26eeba6d/data3NoTypes.json",
+        "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/faeb74ae87eebd9bb46b6e061b83cfd810950c2c/data3NoTypes.json",
       fileToUpload: null,
       isFileToUpload: null
     };
