@@ -24,8 +24,14 @@
           <v-row v-show="isSuccessfulResponse">
             <v-col cols="12" align="center">
               <p>
-                Your data has been successfully submitted. It will be available
-                when processed here.
+                Your data has been successfully submitted.
+              </p>
+              <p>Your submission ID is {{ this.submissionId }}.</p>
+              <p>
+                It will be available when processed
+                <router-link :to="`/visualise-data/${this.submissionId}`"
+                  >here</router-link
+                >.
               </p>
             </v-col>
           </v-row>
@@ -151,8 +157,6 @@ export default {
         )
         .then(response => {
           this.submissionId = response.data.id;
-          console.log("response: " + JSON.stringify(response.data, null, 2));
-          console.log(this.submissionId);
           this.isSuccessfulResponse = true;
           this.isLoading = false;
         })

@@ -149,6 +149,7 @@ export default {
   components: {
     ForceGraph
   },
+  props: ["id"],
   data() {
     return {
       sliderNodes: 100,
@@ -183,6 +184,7 @@ export default {
   },
   mounted() {
     this.changeData();
+    console.log(this.$props.id); // added just to show that passed id can be used
   },
   methods: {
     nodes() {

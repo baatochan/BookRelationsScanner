@@ -23,9 +23,10 @@ export default new Router({
     },
 
     {
-      path: "/visualise-data",
+      path: "/visualise-data/:id",
       name: "VisualiseData",
-      component: VisualiseData
+      component: VisualiseData,
+      props: true
     },
     {
       path: "/load-file",
