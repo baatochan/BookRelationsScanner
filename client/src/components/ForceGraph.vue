@@ -596,11 +596,11 @@ export default {
 >
 
 <style>
-.faded {
+#forceGraph-svg .faded {
   opacity: 0.1;
   transition: 0.2s opacity;
 }
-.highlight {
+#forceGraph-svg .highlight {
   opacity: 1;
 }
 
@@ -617,37 +617,37 @@ export default {
     stroke: #7f3f00;
   }*/
 
-circle {
+#forceGraph-svg circle {
   fill: #001aff;
   stroke: #191900;
   stroke-width: 1.5px;
 }
-circle.rare {
+#forceGraph-svg circle.rare {
   fill: #5cd1ff;
   stroke: black;
 }
-circle.normal {
+#forceGraph-svg circle.normal {
   fill: #0093ce;
   stroke: black;
 }
-circle.frequent {
+#forceGraph-svg circle.frequent {
   fill: #003f58;
   stroke: black;
 }
 
-circle.redd {
+#forceGraph-svg circle.redd {
   fill: red;
   stroke: #001900;
   animation: red-animation 0.5s 2 alternate ease-in-out;
 }
 
-circle.greenn {
+#forceGraph-svg circle.greenn {
   fill: green;
   stroke: #001900;
   animation: green-animation 0.5s 2 alternate ease-in-out;
 }
 
-circle.selected {
+#forceGraph-svg circle.selected {
   stroke: rgb(0, 0, 0);
   stroke-width: 1px;
   animation: selected 0.5s 4 alternate ease-in-out;
@@ -688,18 +688,18 @@ circle.selected {
   }
 }
 
-text {
+#forceGraph-svg text {
   font: 10px arial;
   pointer-events: none;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 }
 
-rect.caption {
+#forceGraph-svg rect.caption {
   fill: #ccccccac;
   stroke: #666;
   stroke-width: 1px;
 }
-text.caption {
+#forceGraph-svg text.caption {
   font-size: 14px;
   font-weight: bold;
 }
