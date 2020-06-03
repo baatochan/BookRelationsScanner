@@ -453,6 +453,8 @@ export default {
       circle.filter(td => td === d).classed("selected", true);
       this.hippieMode = !this.hippieMode;
       this.updateData();
+      const svg = this.selections.svg;
+      svg.selectAll("rect").classed("veryImportant", this.hippieMode);
     }
   },
   watch: {
@@ -515,6 +517,29 @@ export default {
   stroke: rgb(0, 0, 0);
   stroke-width: 1px;
   animation: selected 0.5s 4 alternate ease-in-out;
+}
+
+#grid .veryImportant {
+  stroke-width: 1px;
+  animation: evenMoreImportant 2s infinite ease-in-out;
+}
+
+@keyframes evenMoreImportant {
+  0% {
+    stroke: #b967ff;
+  }
+  25% {
+    stroke: #01cdfe;
+  }
+  50% {
+    stroke: #01cdfe;
+  }
+  75% {
+    stroke: #01cdfe;
+  }
+  100% {
+    stroke: #b967ff;
+  }
 }
 
 @keyframes selected {
