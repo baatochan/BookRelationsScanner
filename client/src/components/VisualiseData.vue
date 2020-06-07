@@ -2,7 +2,7 @@
   <v-row justify="center" align="center">
     <v-row>
       <ForceGraph
-        :data="data"
+        :data="getDataFilteredBySensitivity"
         :nodeNameA="nodeNameA"
         :nodeNameB="nodeNameB"
         ref="forceGraph"
@@ -10,6 +10,24 @@
     </v-row>
     <v-row>
       <v-col cols="12">
+        <v-row>
+          <v-col>
+            <v-slider
+              min="0"
+              :max="sliderMaxNodes"
+              v-model="sliderNodes"
+              label="Czułość wierzchołków"
+            />
+          </v-col>
+          <v-col>
+            <v-slider
+              min="0"
+              :max="sliderMaxEdges"
+              v-model="sliderEdges"
+              label="Czułość krawędzi"
+            />
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12">
             <v-text-field
@@ -133,6 +151,10 @@ export default {
   },
   data() {
     return {
+      sliderNodes: 100,
+      sliderMaxNodes: 1,
+      sliderEdges: 100,
+      sliderMaxEdges: 1,
       nodeNameA: null,
       nodeNameB: null,
       mergeError: false,
@@ -146,6 +168,19 @@ export default {
       fileToUpload: null,
       isFileToUpload: null
     };
+  },
+  computed: {
+    getDataFilteredBySensitivity() {
+      const filteredData = {};
+      if (this.data && this.data.nodes && this.data.links) {
+        filteredData.nodes = this.data.nodes;
+        filteredData.links = this.data.links.filter(item => {
+          return item.value < this.sliderEdges;
+        });
+        return filteredData;
+      }
+      return this.data;
+    }
   },
   mounted() {
     this.changeData();
@@ -237,12 +272,14 @@ export default {
         this.changedData = JSON.parse(JSON.stringify(data)); // Hacky way to copy json
         this.data = JSON.parse(JSON.stringify(data));
         this.items = this.nodes();
+        this.setMaxSensitivityValues();
       });
     },
     restore() {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
       this.data = JSON.parse(JSON.stringify(this.originalData));
       this.items = this.nodes();
+      this.setMaxSensitivityValues();
     },
     clearMergeFields() {
       this.nodeNameA = null;
@@ -263,6 +300,7 @@ export default {
           this.originalData = JSON.parse(tmpData);
           this.data = JSON.parse(tmpData);
           this.items = this.nodes();
+          this.setMaxSensitivityValues();
         });
         reader.readAsText(this.fileToUpload, "utf-8");
       } else {
@@ -273,6 +311,20 @@ export default {
       saveSvgAsPng(document.getElementById("forceGraph-svg"), "graph.png", {
         backgroundColor: "white"
       });
+    },
+    setMaxSensitivityValues() {
+      this.data.links.forEach(item => {
+        if (item.value > this.sliderMaxEdges) {
+          this.sliderMaxEdges = item.value;
+        }
+      });
+      this.data.nodes.forEach(item => {
+        if (item.value > this.sliderMaxNodes) {
+          this.sliderMaxNodes = item.value;
+        }
+      });
+      this.sliderNodes = this.sliderMaxNodes;
+      this.sliderEdges = this.sliderMaxEdges;
     }
   }
 };
