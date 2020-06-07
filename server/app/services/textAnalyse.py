@@ -19,37 +19,50 @@ Mariusz jedzie autem Mariuszem."
 
 
 def main(text):
+    print("-3\n")
     # Get analyzed XML
     info = getTextInf(text)
+    windowSize = 80
 
+    print("-2\n")
     dependendencyTable = []
     index = 0
     weight = 2**index
 
+    print("-1\n")
     # Entity matrix
     table = tableInit(info[0], info[1], info[2], info[3], weight)
     dependendencyTable = table[0]
     personsTable = table[1]
 
-    for i in dependendencyTable:
-        print(i)
+    print("0\n")
+    # for i in dependendencyTable:
+    #    print(i)
 
     # -1 because of empty string at the end of text
     sentencesAmount = len(text.split('.')) - 1
     # windowSize = 20
+    print("1\n")
 
     # Get entities relation
-    # div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
-    floating_window(info, dependendencyTable, personsTable, sentencesAmount)
+    div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
+    # floating_window(info, dependendencyTable, personsTable, sentencesAmount)
 
+    print("2\n")
     print(personsTable)
     i = 0
     for r in dependendencyTable:
-        print(r)
+        # print(r)
         i += 1
 
+    print("3\n")
+    r = parseData(dependendencyTable, personsTable)
     print("Summary:")
-    return parseData(dependendencyTable, personsTable)
+    print(r)
+    f = open("demofile2.txt", "a")
+    f.write(json.dumps(r))
+    f.close()
+    return r
 
 
 def ccl_orths(ccl):
@@ -77,7 +90,10 @@ def ccl_ctag(ccl):
 def getTextInf(textToSend):
     payload = {'text': textToSend, 'lpmn': lpmn, 'user': user_mail}
     headers = {'content-type': 'application/json'}
+    print("request send")
     r = requests.post(url, data=json.dumps(payload), headers=headers)
+    #print("response get: ", r)
+    print("response get: ")
 
     ccl = r.content.decode('utf-8')
     bases = ccl_bases(ccl)
@@ -103,8 +119,8 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
                     count.append(1)
 
     len_ent = len(personsTable)
-    for i in range(0, len_ent):
-        print(personsTable[i], ":", count[i])
+    # for i in range(0, len_ent):
+    #    print(personsTable[i], ":", count[i])
 
     global table_result
     table_result = [[0 for i in range(len_ent)] for j in range(len_ent)]
@@ -123,7 +139,8 @@ def div2(info, dependendencyTable, personsTable,
          sentencesAmount, initWindowSize):
     # Utilising global result and info arrays
     for z in range(0, sentencesAmount):
-        windowSize = int(initWindowSize / (2**z))
+        windowSize = int(initWindowSize / (2 ** z))
+        print("win size: ", windowSize)
         if (windowSize >= 1):
             weight = 2**z
             for i in range(0, sentencesAmount - 1, windowSize):
@@ -156,6 +173,7 @@ def floating_window(info, dependendencyTable, personsTable, sentencesAmount):
                                 personsFromWindow, weight)
         windowSize -= windowStep
         weight *= weightStep
+        print("waga: ", weight, ", win size: ", windowSize)
 
 
 def findPersonInWindow(info, indexStart, indexStop, max):
@@ -222,6 +240,7 @@ def parseData(dependendencyTable, personsTable):
     pLen = len(personsTable)
 
     for p in range(0, pLen):
+        print("P ", p)
         if p != 0:
             x += ', '
         x += '{ "name": "' + personsTable[p] + '", '
@@ -237,6 +256,7 @@ def parseData(dependendencyTable, personsTable):
     z = 0
 
     for i in range(0, lenP):
+        print("I ", i)
         for j in range(1+z, lenP):
             data += '{ "source": ' + str(i) + ', "target": ' + str(j) + \
                     ', "value": ' + str(dependendencyTable[i][j]) + \
