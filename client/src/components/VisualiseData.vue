@@ -173,7 +173,9 @@ export default {
     getDataFilteredBySensitivity() {
       const filteredData = {};
       if (this.data && this.data.nodes && this.data.links) {
-        filteredData.nodes = this.data.nodes;
+        filteredData.nodes = this.data.nodes.filter(item => {
+          return item.value < this.sliderNodes;
+        });
         filteredData.links = this.data.links.filter(item => {
           return item.value < this.sliderEdges;
         });
