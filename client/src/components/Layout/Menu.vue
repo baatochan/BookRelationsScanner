@@ -1,28 +1,21 @@
 <template>
   <v-navigation-drawer v-model="drawer" app>
     <v-list dense>
-      <v-list-item link>
-        <v-list-item-action> </v-list-item-action>
+      <v-list-item link to="/visualise-data">
         <v-list-item-content>
-          <router-link class="RouterLink" to="/visualise-data">
-            <v-list-item-title>Visualise Data</v-list-item-title>
-          </router-link>
+          <v-list-item-title class="text-center"
+            >Visualise Data</v-list-item-title
+          >
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link>
-        <v-list-item-action> </v-list-item-action>
+      <v-list-item link to="/force-graph">
         <v-list-item-content>
-          <router-link class="RouterLink" to="/force-graph">
-            <v-list-item-title>Force Graph</v-list-item-title>
-          </router-link>
+          <v-list-item-title class="text-center">Force Graph</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link>
-        <v-list-item-action> </v-list-item-action>
+      <v-list-item link to="/load-file">
         <v-list-item-content>
-          <router-link class="RouterLink" to="/load-file">
-            <v-list-item-title>Load File</v-list-item-title>
-          </router-link>
+          <v-list-item-title class="text-center">Load File</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>
