@@ -39,7 +39,7 @@ def main(text):
     weight = 2**index
 
     # Entity matrix
-    table = tableInit(info[0], info[1], info[2], info[3], weight)
+    table = tableInit(info[0], info[1], info[2], info[3], info[4], weight)
     dependendencyTable = table[0]
     personsTable = table[1]
 
@@ -92,9 +92,9 @@ def ccl_ann(ccl):
     for tok in tree.iter('tok'):
         buff = tok.find("ann")
         if (buff == None):
-            annot += "0"
+            annot.append(0)
         else:
-            annot += buff.text
+            annot.append(int(buff.text))
     return annot
 
 
@@ -112,13 +112,13 @@ def getTextInf(textToSend):
     return [ccl, bases, poses, ctag_attr, annot]
 
 
-def tableInit(xml, bases, poses, ctag_attr, weight):
+def tableInit(xml, bases, poses, ctag_attr, annot, weight):
     len_words = len(poses)
     count = []
     personsTable = []
 
     for i in range(0, len_words-1):
-        if 'subst' in ctag_attr[i] and 'sg' in ctag_attr[i] and 'm1' in ctag_attr[i]:
+        if annot[i] > 0:
             if str(bases[i]) in personsTable:
                 pI = personsTable.index(bases[i])
                 count[pI] = count[pI] + 1
@@ -193,6 +193,7 @@ def findPersonInWindow(info, indexStart, indexStop, max):
     bases = info[1]
     poses = info[2]
     ctag_attr = info[3]
+    annot = info[4]
     len_words = len(poses)
     entities = []
     count = []
@@ -210,7 +211,7 @@ def findPersonInWindow(info, indexStart, indexStop, max):
             break
 
         if isInWindow:
-            if 'subst' in ctag_attr[i] and 'sg' in ctag_attr[i] and 'm1' in ctag_attr[i]:
+            if annot[i] > 0:
                 if str(bases[i]) in entities:
                     pI = entities.index(bases[i])
                     count[pI] = count[pI] + 1
