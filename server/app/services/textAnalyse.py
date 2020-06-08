@@ -228,8 +228,8 @@ def parseData(dependendencyTable, personsTable):
         x += '"class": "' + personClassification(dependendencyTable,
                                                  personsTable,
                                                  dependendencyTable[p][p]) + '", '
-        x += '"value": "' + str(dependendencyTable[p][p]) + '"'
-        x += ' }'
+        x += '"value": "' + str(dependendencyTable[p][p])
+        x += '" }'
     x += '],'
     x += ' "links": ['
 
