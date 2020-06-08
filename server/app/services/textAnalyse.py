@@ -17,10 +17,22 @@ Np. Bartosz zna się tylko z Pawłem.\
 Reszta grupy jest nieznana.\
 Mariusz jedzie autem Mariuszem."
 
+text = "Konrad żyd jechał sobie rowerem z Pawłem. Paweł następnie spotkał się ze swoim kolegom Żydem. Głupki są wszędzie."
+
 
 def main(text):
     # Get analyzed XML
     info = getTextInf(text)
+    print("ccl")
+    print(info[0])
+    print("bases")
+    print(info[1])
+    print("poses")
+    print(info[2])
+    print("ctag_attr")
+    print(info[3])
+    print("annot")
+    print(info[4])
 
     dependendencyTable = []
     index = 0
