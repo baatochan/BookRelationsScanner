@@ -73,6 +73,9 @@ def ccl_ctag(ccl):
     return [tok.find('./lex/ctag').
             text.split(":") for tok in tree.iter('tok')]
 
+def ccl_ann(ccl):
+    tree = ET.fromstring(ccl)
+    return [ann.text for ann in tree.iter('ann')]
 
 def getTextInf(textToSend):
     payload = {'text': textToSend, 'lpmn': lpmn, 'user': user_mail}
@@ -83,8 +86,9 @@ def getTextInf(textToSend):
     bases = ccl_bases(ccl)
     poses = ccl_poses(ccl)
     ctag_attr = ccl_ctag(ccl)
+    annot = ccl_ann(ccl)
 
-    return [ccl, bases, poses, ctag_attr]
+    return [ccl, bases, poses, ctag_attr, annot]
 
 
 def tableInit(xml, bases, poses, ctag_attr, weight):
