@@ -85,9 +85,18 @@ def ccl_ctag(ccl):
     return [tok.find('./lex/ctag').
             text.split(":") for tok in tree.iter('tok')]
 
+
 def ccl_ann(ccl):
     tree = ET.fromstring(ccl)
-    return [ann.text for ann in tree.iter('ann')]
+    annot = []
+    for tok in tree.iter('tok'):
+        buff = tok.find("ann")
+        if (buff == None):
+            annot += "0"
+        else:
+            annot += buff.text
+    return annot
+
 
 def getTextInf(textToSend):
     payload = {'text': textToSend, 'lpmn': lpmn, 'user': user_mail}
