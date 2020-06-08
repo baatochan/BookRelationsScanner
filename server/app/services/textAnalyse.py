@@ -93,14 +93,13 @@ def tableInit(xml, bases, poses, ctag_attr, weight):
     personsTable = []
 
     for i in range(0, len_words-1):
-        if poses[i] == 'subst':
-            if ctag_attr[i][3] == 'm1':
-                if str(bases[i]) in personsTable:
-                    pI = personsTable.index(bases[i])
-                    count[pI] = count[pI] + 1
-                else:
-                    personsTable.append(bases[i])
-                    count.append(1)
+        if 'subst' in ctag_attr[i] and 'sg' in ctag_attr[i] and 'm1' in ctag_attr[i]:
+            if str(bases[i]) in personsTable:
+                pI = personsTable.index(bases[i])
+                count[pI] = count[pI] + 1
+            else:
+                personsTable.append(bases[i])
+                count.append(1)
 
     len_ent = len(personsTable)
     for i in range(0, len_ent):
@@ -186,15 +185,14 @@ def findPersonInWindow(info, indexStart, indexStop, max):
             break
 
         if isInWindow:
-            if poses[i] == 'subst':
-                if ctag_attr[i][3] == 'm1':
-                    if str(bases[i]) in entities:
-                        pI = entities.index(bases[i])
-                        count[pI] = count[pI] + 1
+            if 'subst' in ctag_attr[i] and 'sg' in ctag_attr[i] and 'm1' in ctag_attr[i]:
+                if str(bases[i]) in entities:
+                    pI = entities.index(bases[i])
+                    count[pI] = count[pI] + 1
+                else:
+                    entities.append(bases[i])
+                    count.append(1)
 
-                    else:
-                        entities.append(bases[i])
-                        count.append(1)
     return [entities, count]
 
 
