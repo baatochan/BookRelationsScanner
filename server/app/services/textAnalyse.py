@@ -36,11 +36,11 @@ def main(text):
 
     # -1 because of empty string at the end of text
     sentencesAmount = len(text.split('.')) - 1
-    # windowSize = 20
+    windowSize = 200
 
     # Get entities relation
-    # div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
-    floating_window(info, dependendencyTable, personsTable, sentencesAmount)
+    div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
+    # floating_window(info, dependendencyTable, personsTable, sentencesAmount)
 
     print(personsTable)
     i = 0
@@ -49,7 +49,11 @@ def main(text):
         i += 1
 
     print("Summary:")
-    return parseData(dependendencyTable, personsTable)
+    ret = parseData(dependendencyTable, personsTable)
+    f = open("demofile2.json", "a")
+    f.write(json.dumps(ret))
+    f.close()
+    return ret
 
 
 def ccl_orths(ccl):
