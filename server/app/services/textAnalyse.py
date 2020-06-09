@@ -17,7 +17,9 @@ Np. Bartosz zna się tylko z Pawłem.\
 Reszta grupy jest nieznana.\
 Mariusz jedzie autem Mariuszem."
 
-text = "Konrad żyd jechał sobie rowerem z Pawłem. Paweł następnie spotkał się ze swoim kolegom Żydem. Głupki są wszędzie."
+text = "Konrad żyd jechał sobie rowerem z Pawłem.\
+Paweł następnie spotkał się ze swoim kolegom Żydem.\
+Głupki są wszędzie."
 
 
 def main(text):
@@ -91,7 +93,7 @@ def ccl_ann(ccl):
     annot = []
     for tok in tree.iter('tok'):
         buff = tok.find("ann")
-        if (buff == None):
+        if (buff is None):
             annot.append(0)
         else:
             annot.append(int(buff.text))
@@ -192,7 +194,6 @@ def findPersonInWindow(info, indexStart, indexStop, max):
     # Empty array for entities cnt
     bases = info[1]
     poses = info[2]
-    ctag_attr = info[3]
     annot = info[4]
     len_words = len(poses)
     entities = []
