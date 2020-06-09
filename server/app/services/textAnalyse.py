@@ -114,19 +114,23 @@ def getTextInf(textToSend):
     return [ccl, bases, poses, ctag_attr, annot]
 
 
+def check_entity(tag, base, arr, cnt):
+    if tag > 0:
+        if str(base) in arr:
+            pI = arr.index(base)
+            cnt[pI] = cnt[pI] + 1
+        else:
+            arr.append(base)
+            cnt.append(1)
+
+
 def tableInit(xml, bases, poses, ctag_attr, annot, weight):
     len_words = len(poses)
     count = []
     personsTable = []
 
     for i in range(0, len_words-1):
-        if annot[i] > 0:
-            if str(bases[i]) in personsTable:
-                pI = personsTable.index(bases[i])
-                count[pI] = count[pI] + 1
-            else:
-                personsTable.append(bases[i])
-                count.append(1)
+        check_entity(annot[i], bases[i], personsTable, count)
 
     len_ent = len(personsTable)
     for i in range(0, len_ent):
@@ -212,13 +216,7 @@ def findPersonInWindow(info, indexStart, indexStop, max):
             break
 
         if isInWindow:
-            if annot[i] > 0:
-                if str(bases[i]) in entities:
-                    pI = entities.index(bases[i])
-                    count[pI] = count[pI] + 1
-                else:
-                    entities.append(bases[i])
-                    count.append(1)
+            check_entity(annot[i], bases[i], entities, count)
 
     return [entities, count]
 
