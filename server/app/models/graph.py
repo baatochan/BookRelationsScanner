@@ -6,6 +6,7 @@ class Graph(db.Model):
     ready = db.Column(db.Boolean)
     nodesData = db.Column(db.String(1000000000))
     name = db.Column(db.String(255))
+    settings = db.Column(db.String(255))
 
     def __repr__(self):
-        return "<Currency data: {} {} {} {} >".format(self.id, self.name, self.ready, self.nodesData)
+        return "<Currency data: id:{}, name:{}, is ready:{}, settings json:{}, nodedata:{} >".format(self.id, self.name, self.ready, self.settings, self.nodesData)
