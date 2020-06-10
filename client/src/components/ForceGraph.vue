@@ -56,7 +56,6 @@ export default {
       gridSize: 100,
       selections: {},
       simulation: null,
-      hippieMode: false,
       forceProperties: {
         center: {
           x: 0.5,
@@ -169,19 +168,6 @@ export default {
           .slice(1)
       );
     },
-    nicerNodeColor(percent) {
-      return (
-        "#" +
-        (
-          (1 << 24) +
-          ((255 - Math.floor((percent / 100.0) * 255.0)) << 16) +
-          ((136 + Math.floor((percent / 100) * (255 - 136))) << 8) +
-          255
-        )
-          .toString(16)
-          .slice(1)
-      );
-    },
     tick() {
       // If no data is passed to the Vue component, do nothing
       if (!this.data) {
@@ -247,11 +233,7 @@ export default {
         .data(this.links)
         .enter()
         .append("path")
-        .attr("stroke", d => {
-          if (this.hippieMode)
-            return this.nicerNodeColor(Math.max(15, d.value));
-          else return this.nodeColor(Math.max(15, d.value));
-        })
+        .attr("stroke", d => this.nodeColor(Math.max(15, d.value)))
         .attr("stroke-width", d => Math.sqrt(d.value / 4));
 
       // Redrawing nodes to avoid lines above them
@@ -263,10 +245,7 @@ export default {
         .append("circle")
         .attr("r", 30)
         .attr("class", "circle")
-        .attr("fill", d => {
-          if (this.hippieMode) return this.nicerNodeColor(d.occurrence);
-          else return this.nodeColor(d.occurrence);
-        })
+        .attr("fill", d => this.nodeColor(d.occurrence))
         .call(
           d3
             .drag()
@@ -451,10 +430,6 @@ export default {
       const circle = this.selections.graph.selectAll("circle");
       circle.classed("selected", false);
       circle.filter(td => td === d).classed("selected", true);
-      this.hippieMode = !this.hippieMode;
-      this.updateData();
-      const svg = this.selections.svg;
-      svg.selectAll("rect").classed("veryImportant", this.hippieMode);
     }
   },
   watch: {
@@ -517,29 +492,6 @@ export default {
   stroke: rgb(0, 0, 0);
   stroke-width: 1px;
   animation: selected 0.5s 4 alternate ease-in-out;
-}
-
-#grid .veryImportant {
-  stroke-width: 1px;
-  animation: evenMoreImportant 2s infinite ease-in-out;
-}
-
-@keyframes evenMoreImportant {
-  0% {
-    stroke: #b967ff;
-  }
-  25% {
-    stroke: #01cdfe;
-  }
-  50% {
-    stroke: #01cdfe;
-  }
-  75% {
-    stroke: #01cdfe;
-  }
-  100% {
-    stroke: #b967ff;
-  }
 }
 
 @keyframes selected {
