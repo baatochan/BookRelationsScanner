@@ -34,9 +34,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.RouterLink {
-  text-decoration: none;
-  color: #000000;
-}
-</style>
+<style scoped></style>

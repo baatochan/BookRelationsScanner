@@ -164,7 +164,6 @@ export default {
       changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
         "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/0ecace4aed4f770b3d80f1d57095715f1af66885/data3NoTypes.json",
-      dataList: ["data1.json", "data2.json", "data3.json"],
       fileToUpload: null,
       isFileToUpload: null
     };
@@ -174,10 +173,10 @@ export default {
       const filteredData = {};
       if (this.data && this.data.nodes && this.data.links) {
         filteredData.nodes = this.data.nodes.filter(item => {
-          return item.occurrence < this.sliderNodes;
+          return item.occurrence <= this.sliderNodes;
         });
         filteredData.links = this.data.links.filter(item => {
-          return item.value < this.sliderEdges;
+          return item.value <= this.sliderEdges;
         });
         return filteredData;
       }
