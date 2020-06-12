@@ -1,6 +1,8 @@
 from flask import json
 import requests
 import xml.etree.ElementTree as ET
+from app.services.db import db
+from app.models.graph import Graph
 
 clarinpl_url = "http://ws.clarin-pl.eu/nlprest2/base"
 url = clarinpl_url + "/process"
@@ -18,50 +20,49 @@ Reszta grupy jest nieznana.\
 Mariusz jedzie autem Mariuszem."
 
 
-def main(text):
-    print("-3\n")
+def main(text, id):
     # Get analyzed XML
     info = getTextInf(text)
     windowSize = 80
 
-    print("-2\n")
     dependendencyTable = []
     index = 0
     weight = 2**index
 
-    print("-1\n")
     # Entity matrix
     table = tableInit(info[0], info[1], info[2], info[3], weight)
     dependendencyTable = table[0]
     personsTable = table[1]
 
-    print("0\n")
     # for i in dependendencyTable:
     #    print(i)
 
     # -1 because of empty string at the end of text
     sentencesAmount = len(text.split('.')) - 1
-    # windowSize = 20
-    print("1\n")
+    windowSize = 200
 
     # Get entities relation
     div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
     # floating_window(info, dependendencyTable, personsTable, sentencesAmount)
 
-    print("2\n")
-    print(personsTable)
+    # print(personsTable)
     i = 0
     for r in dependendencyTable:
         # print(r)
         i += 1
 
-    print("3\n")
     r = parseData(dependendencyTable, personsTable)
-    print("Summary:")
-    print(r)
+    # print("Summary:")
+    # print(r)
     f = open("demofile2.txt", "a")
     f.write(json.dumps(r))
     f.close()
+
+    g = Graph.query.filter_by(id=id).first()
+    g.nodesData = json.dumps(r)
+    g.ready = 1
+    db.session.commit()
+
     return r
 
 
@@ -93,7 +94,6 @@ def getTextInf(textToSend):
     print("request send")
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     #print("response get: ", r)
-    print("response get: ")
 
     ccl = r.content.decode('utf-8')
     bases = ccl_bases(ccl)
