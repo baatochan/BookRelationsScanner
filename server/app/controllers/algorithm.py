@@ -3,7 +3,6 @@ from app.services.textAnalyse import main
 from flask import request
 from app.services.db import db
 from app.models.graph import Graph
-from flask import jsonify
 
 
 class Algorithm(MethodView):
