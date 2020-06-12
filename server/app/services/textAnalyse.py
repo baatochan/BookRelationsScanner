@@ -105,7 +105,9 @@ def getTextInf(textToSend):
 
 
 def check_entity(annot, ctag, base, arr, cnt):
-    if ((annot > 0) and (("subst" in ctag and "sg" in ctag) or ("ign" in ctag))):
+    if ((annot > 0) and
+        (("subst" in ctag and "sg" in ctag and "m1" in ctag) or
+         ("ign" in ctag))):
         if str(base) in arr:
             pI = arr.index(base)
             cnt[pI] = cnt[pI] + 1
