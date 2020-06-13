@@ -27,7 +27,7 @@ def main(text):
     weight = 2**index
 
     # Entity matrix
-    table = tableInit(info[0], info[1], info[2], info[3], weight)
+    table = tableInit(info[0], info[1], info[2], info[3], info[4], weight)
     dependendencyTable = table[0]
     personsTable = table[1]
 
@@ -36,11 +36,11 @@ def main(text):
 
     # -1 because of empty string at the end of text
     sentencesAmount = len(text.split('.')) - 1
-    # windowSize = 20
+    windowSize = 200
 
     # Get entities relation
-    # div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
-    floating_window(info, dependendencyTable, personsTable, sentencesAmount)
+    div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
+    # floating_window(info, dependendencyTable, personsTable, sentencesAmount)
 
     print(personsTable)
     i = 0
@@ -49,7 +49,11 @@ def main(text):
         i += 1
 
     print("Summary:")
-    return parseData(dependendencyTable, personsTable)
+    ret = parseData(dependendencyTable, personsTable)
+    f = open("demofile2.json", "a")
+    f.write(json.dumps(ret))
+    f.close()
+    return ret
 
 
 def ccl_orths(ccl):
@@ -74,6 +78,18 @@ def ccl_ctag(ccl):
             text.split(":") for tok in tree.iter('tok')]
 
 
+def ccl_ann(ccl):
+    tree = ET.fromstring(ccl)
+    annot = []
+    for tok in tree.iter('tok'):
+        buff = tok.find("ann")
+        if (buff is None):
+            annot.append(0)
+        else:
+            annot.append(int(buff.text))
+    return annot
+
+
 def getTextInf(textToSend):
     payload = {'text': textToSend, 'lpmn': lpmn, 'user': user_mail}
     headers = {'content-type': 'application/json'}
@@ -83,24 +99,30 @@ def getTextInf(textToSend):
     bases = ccl_bases(ccl)
     poses = ccl_poses(ccl)
     ctag_attr = ccl_ctag(ccl)
+    annot = ccl_ann(ccl)
 
-    return [ccl, bases, poses, ctag_attr]
+    return [ccl, bases, poses, ctag_attr, annot]
 
 
-def tableInit(xml, bases, poses, ctag_attr, weight):
+def check_entity(annot, ctag, base, arr, cnt):
+    if ((annot > 0) and
+        (("subst" in ctag and "sg" in ctag and "m1" in ctag) or
+         ("ign" in ctag))):
+        if str(base) in arr:
+            pI = arr.index(base)
+            cnt[pI] = cnt[pI] + 1
+        else:
+            arr.append(base)
+            cnt.append(1)
+
+
+def tableInit(xml, bases, poses, ctag_attr, annot, weight):
     len_words = len(poses)
     count = []
     personsTable = []
 
     for i in range(0, len_words-1):
-        if poses[i] == 'subst':
-            if ctag_attr[i][3] == 'm1':
-                if str(bases[i]) in personsTable:
-                    pI = personsTable.index(bases[i])
-                    count[pI] = count[pI] + 1
-                else:
-                    personsTable.append(bases[i])
-                    count.append(1)
+        check_entity(annot[i], ctag_attr[i], bases[i], personsTable, count)
 
     len_ent = len(personsTable)
     for i in range(0, len_ent):
@@ -169,6 +191,7 @@ def findPersonInWindow(info, indexStart, indexStop, max):
     bases = info[1]
     poses = info[2]
     ctag_attr = info[3]
+    annot = info[4]
     len_words = len(poses)
     entities = []
     count = []
@@ -186,15 +209,8 @@ def findPersonInWindow(info, indexStart, indexStop, max):
             break
 
         if isInWindow:
-            if poses[i] == 'subst':
-                if ctag_attr[i][3] == 'm1':
-                    if str(bases[i]) in entities:
-                        pI = entities.index(bases[i])
-                        count[pI] = count[pI] + 1
+            check_entity(annot[i], ctag_attr[i], bases[i], entities, count)
 
-                    else:
-                        entities.append(bases[i])
-                        count.append(1)
     return [entities, count]
 
 
