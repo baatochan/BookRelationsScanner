@@ -34,9 +34,6 @@ def main(text, id):
     dependendencyTable = table[0]
     personsTable = table[1]
 
-    # for i in dependendencyTable:
-    #    print(i)
-
     # -1 because of empty string at the end of text
     sentencesAmount = len(text.split('.')) - 1
     windowSize = 200
@@ -45,7 +42,6 @@ def main(text, id):
     div2(info, dependendencyTable, personsTable, sentencesAmount, windowSize)
     # floating_window(info, dependendencyTable, personsTable, sentencesAmount)
 
-    # print(personsTable)
     i = 0
     for r in dependendencyTable:
         # print(r)
@@ -62,6 +58,7 @@ def main(text, id):
     db.session.commit()
 
     return r
+
 
 def ccl_orths(ccl):
     tree = ET.fromstring(ccl)
@@ -133,8 +130,6 @@ def tableInit(xml, bases, poses, ctag_attr, annot, weight):
         check_entity(annot[i], ctag_attr[i], bases[i], personsTable, count)
 
     len_ent = len(personsTable)
-    # for i in range(0, len_ent):
-    #    print(personsTable[i], ":", count[i])
 
     global table_result
     table_result = [[0 for i in range(len_ent)] for j in range(len_ent)]
@@ -154,7 +149,6 @@ def div2(info, dependendencyTable, personsTable,
     # Utilising global result and info arrays
     for z in range(0, sentencesAmount):
         windowSize = int(initWindowSize / (2 ** z))
-        print("win size: ", windowSize)
         if (windowSize >= 1):
             weight = 2**z
             for i in range(0, sentencesAmount - 1, windowSize):
