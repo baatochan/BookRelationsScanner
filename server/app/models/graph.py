@@ -9,11 +9,12 @@ class Graph(db.Model):
     settings = db.Column(db.String(255))
 
     def __repr__(self):
-        return '{"id":"' + str(self.id) + '", "name":"' + self.name + '", "ready": "' + \
-            str(self.ready) + '", "nodesData": "' + self.nodesData + \
-            '", "settings": "' + self.settings + '"}'
+        return '{"id":"' + str(self.id) + '", "name":"' + self.name + \
+            '", "ready": "' + str(self.ready) + '", "nodesData": "' + \
+            self.nodesData + '", "settings": "' + self.settings + '"}'
 
     def toJSON(self):
-        json = '{"id": "' + str(self.id) + '", "nodesData": ' + self.nodesData + \
-            ', "name": "' + self.name + '", "settings": "' + self.settings + '"}'
+        json = '{"id": "' + str(self.id) + '", "nodesData": ' + \
+            self.nodesData + ', "name": "' + self.name + \
+            '", "settings": "' + self.settings + '"}'
         return json
