@@ -241,9 +241,12 @@ def parseData(dependendencyTable, personsTable):
         if p != 0:
             x += ', '
         x += '{ "name": "' + personsTable[p] + '", '
-        x += '"class": "' + personClassification(dependendencyTable,
-                                                 personsTable,
-                                                 dependendencyTable[p][p])
+        x += '"class": "'
+        x += personClassification(dependendencyTable,
+                                  personsTable,
+                                  dependendencyTable[p][p])
+        x += '", '
+        x += '"value": "' + str(dependendencyTable[p][p])
         x += '" }'
     x += '],'
     x += ' "links": ['
