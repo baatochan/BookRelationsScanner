@@ -74,13 +74,13 @@ export default {
           radius: 35
         },
         forceX: {
-          enabled: false,
-          strength: 0.05,
+          enabled: true,
+          strength: 0.03,
           x: 0.5
         },
         forceY: {
-          enabled: false,
-          strength: 0.35,
+          enabled: true,
+          strength: 0.03,
           y: 0.5
         },
         link: {
@@ -100,25 +100,6 @@ export default {
     },
     links() {
       return this.data.links;
-    },
-    // These are needed for captions
-    linkTypes() {
-      const linkTypes = [];
-      this.links.forEach(link => {
-        if (linkTypes.indexOf(link.type) === -1) {
-          linkTypes.push(link.type);
-        }
-      });
-      return linkTypes.sort();
-    },
-    classes() {
-      const classes = [];
-      this.nodes.forEach(node => {
-        if (classes.indexOf(node.class) === -1) {
-          classes.push(node.class);
-        }
-      });
-      return classes.sort();
     }
   },
   created() {
@@ -172,24 +153,20 @@ export default {
       .attr("x", "1%")
       .attr("y", "98%")
       .attr("text-anchor", "left");
-
-    // Caption
-    this.selections.caption = svg.append("g");
-    this.selections.caption
-      .append("rect")
-      .attr("width", "200")
-      .attr("height", "0")
-      .attr("rx", "10")
-      .attr("ry", "10")
-      .attr("class", "caption");
   },
   methods: {
-    getRandomBlue(d) {
-      if (d.value < 5) return "#b0e4ff";
-      else if (d.value < 30) return "#8cd7ff";
-      else if (d.value < 40) return "#66caff";
-      else if (d.value < 50) return "#1cb0ff";
-      else return "#00a4fc";
+    nodeColor(percent) {
+      return (
+        "#" +
+        (
+          (1 << 24) +
+          ((255 - Math.floor((percent / 100.0) * 255.0)) << 16) +
+          ((255 - Math.floor((136 * percent) / 100)) << 8) +
+          255
+        )
+          .toString(16)
+          .slice(1)
+      );
     },
     tick() {
       // If no data is passed to the Vue component, do nothing
@@ -223,7 +200,7 @@ export default {
     highlightToBeMerged() {
       const graph = this.selections.graph;
       // Clear all highlights
-      graph.selectAll("circle").attr("class", d => d.class);
+      graph.selectAll("circle").attr("class", "circle");
 
       if (this.nodeNameA !== null) {
         graph
@@ -250,21 +227,14 @@ export default {
       const simulation = this.simulation;
       const graph = this.selections.graph;
 
-      // Links should only exit if not needed anymore
-      graph
-        .selectAll("path")
-        .data(this.links)
-        .exit()
-        .remove();
-
+      graph.selectAll("path").remove();
       graph
         .selectAll("path")
         .data(this.links)
         .enter()
         .append("path")
-        .attr("class", d => "link " + d.type)
-        .attr("stroke", d => this.getRandomBlue(d)) // "#007bff")
-        .attr("stroke-width", 1); // d => Math.sqrt(d.value*2,5))//d => Math.sqrt(d.value)) this is for strength dependant link width
+        .attr("stroke", d => this.nodeColor(Math.max(15, d.value)))
+        .attr("stroke-width", d => Math.sqrt(d.value / 4));
 
       // Redrawing nodes to avoid lines above them
       graph.selectAll("circle").remove();
@@ -274,7 +244,8 @@ export default {
         .enter()
         .append("circle")
         .attr("r", 30)
-        .attr("class", d => d.class)
+        .attr("class", "circle")
+        .attr("fill", d => this.nodeColor(d.occurrence))
         .call(
           d3
             .drag()
@@ -313,9 +284,6 @@ export default {
           return d.name === removedNodeTag;
         })
         .remove();
-
-      // Update caption every time data changes
-      this.updateCaption();
       simulation.alpha(1).restart();
     },
     updateForces() {
@@ -375,107 +343,6 @@ export default {
       }
       this.selections.statsNodes.text("Nodes: " + nodeCount);
       this.selections.statsConnections.text("Connections: " + linkCount);
-    },
-    updateCaption() {
-      const lineHeight = 30;
-      const lineMiddle = lineHeight / 2;
-      const captionXPadding = 28;
-      const captionYPadding = 5;
-
-      const caption = this.selections.caption;
-      caption
-        .select("rect")
-        .attr(
-          "height",
-          captionYPadding * 2 +
-            lineHeight * (this.classes.length + this.linkTypes.length)
-        );
-
-      const linkLine = d => {
-        const source = {
-          x: captionXPadding + 13,
-          y:
-            captionYPadding +
-            (lineMiddle + 1) +
-            lineHeight * this.linkTypes.indexOf(d)
-        };
-        const target = {
-          x: captionXPadding - 10
-        };
-        return "M" + source.x + "," + source.y + "H" + target.x;
-      };
-
-      caption.selectAll("g").remove();
-      const linkCaption = caption.append("g");
-      linkCaption
-        .selectAll("path")
-        .data(this.linkTypes)
-        .enter()
-        .append("path")
-        .attr("d", linkLine)
-        .attr("class", d => "link " + d);
-
-      linkCaption
-        .selectAll("text")
-        .data(this.linkTypes)
-        .enter()
-        .append("text")
-        .attr("x", captionXPadding + 20)
-        .attr(
-          "y",
-          d =>
-            captionYPadding +
-            (lineMiddle + 5) +
-            lineHeight * this.linkTypes.indexOf(d)
-        )
-        .attr("class", "caption")
-        .text(d => d);
-
-      const classCaption = caption.append("g");
-      classCaption
-        .selectAll("circle")
-        .data(this.classes)
-        .enter()
-        .append("circle")
-        .attr("r", 10)
-        .attr("cx", captionXPadding - 2)
-        .attr(
-          "cy",
-          d =>
-            captionYPadding +
-            lineMiddle +
-            lineHeight * (this.linkTypes.length + this.classes.indexOf(d))
-        )
-        .attr("class", d => d.toLowerCase());
-
-      classCaption
-        .selectAll("text")
-        .data(this.classes)
-        .enter()
-        .append("text")
-        .attr("x", captionXPadding + 20)
-        .attr(
-          "y",
-          d =>
-            captionYPadding +
-            (lineMiddle + 5) +
-            lineHeight * (this.linkTypes.length + this.classes.indexOf(d))
-        )
-        .attr("class", "caption")
-        .text(d => d);
-
-      const captionWidth = caption.node().getBBox().width;
-      const captionHeight = caption.node().getBBox().height;
-      const paddingX = 18;
-      const paddingY = 12;
-      caption.attr(
-        "transform",
-        "translate(" +
-          (this.width - captionWidth - paddingX) +
-          ", " +
-          (this.height - captionHeight - paddingY) +
-          ")"
-      );
     },
     zoomed() {
       const transform = d3.event.transform;
@@ -604,35 +471,9 @@ export default {
   opacity: 1;
 }
 
-/*path.link {
-    fill: none;
-    stroke: #666;
-    stroke-width: 1.5px;
-  }
-  path.link.dotted {
-    stroke: #005900;
-    stroke-dasharray: 5, 2;
-  }
-  path.link.straight {
-    stroke: #7f3f00;
-  }*/
-
 #forceGraph-svg circle {
-  fill: #001aff;
-  stroke: #191900;
+  stroke: black;
   stroke-width: 1.5px;
-}
-#forceGraph-svg circle.rare {
-  fill: #5cd1ff;
-  stroke: black;
-}
-#forceGraph-svg circle.normal {
-  fill: #0093ce;
-  stroke: black;
-}
-#forceGraph-svg circle.frequent {
-  fill: #003f58;
-  stroke: black;
 }
 
 #forceGraph-svg circle.redd {
@@ -687,20 +528,9 @@ export default {
     r: 32;
   }
 }
-
 #forceGraph-svg text {
   font: 10px arial;
   pointer-events: none;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-}
-
-#forceGraph-svg rect.caption {
-  fill: #ccccccac;
-  stroke: #666;
-  stroke-width: 1px;
-}
-#forceGraph-svg text.caption {
-  font-size: 14px;
-  font-weight: bold;
 }
 </style>
