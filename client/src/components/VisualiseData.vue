@@ -2,7 +2,7 @@
   <v-row justify="center" align="center">
     <v-row>
       <ForceGraph
-        :data="data"
+        :data="getDataFilteredBySensitivity"
         :nodeNameA="nodeNameA"
         :nodeNameB="nodeNameB"
         ref="forceGraph"
@@ -10,6 +10,24 @@
     </v-row>
     <v-row>
       <v-col cols="12">
+        <v-row>
+          <v-col>
+            <v-slider
+              min="0"
+              :max="sliderMaxNodes"
+              v-model="sliderNodes"
+              label="Czułość wierzchołków"
+            />
+          </v-col>
+          <v-col>
+            <v-slider
+              min="0"
+              :max="sliderMaxEdges"
+              v-model="sliderEdges"
+              label="Czułość krawędzi"
+            />
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12">
             <v-text-field
@@ -133,6 +151,10 @@ export default {
   },
   data() {
     return {
+      sliderNodes: 100,
+      sliderMaxNodes: 1,
+      sliderEdges: 100,
+      sliderMaxEdges: 1,
       nodeNameA: null,
       nodeNameB: null,
       mergeError: false,
@@ -141,11 +163,23 @@ export default {
       data: null, // Separate data structure for D3
       changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
-        "https://gist.githubusercontent.com/DawidPiechota/bc9eae88413e3546e7af2a92539f30bc/raw/7a2633381f014dd12feb810e56e6702ab30914a2/data3.json",
-      dataList: ["data1.json", "data2.json", "data3.json"],
+        "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/0ecace4aed4f770b3d80f1d57095715f1af66885/data3NoTypes.json",
       fileToUpload: null,
       isFileToUpload: null
     };
+  },
+  computed: {
+    getDataFilteredBySensitivity() {
+      const filteredData = {};
+      if (this.data && this.data.nodes && this.data.links) {
+        filteredData.nodes = this.data.nodes;
+        filteredData.links = this.data.links.filter(item => {
+          return item.value <= this.sliderEdges;
+        });
+        return filteredData;
+      }
+      return this.data;
+    }
   },
   mounted() {
     this.changeData();
@@ -237,12 +271,14 @@ export default {
         this.changedData = JSON.parse(JSON.stringify(data)); // Hacky way to copy json
         this.data = JSON.parse(JSON.stringify(data));
         this.items = this.nodes();
+        this.setMaxSensitivityValues();
       });
     },
     restore() {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
       this.data = JSON.parse(JSON.stringify(this.originalData));
       this.items = this.nodes();
+      this.setMaxSensitivityValues();
     },
     clearMergeFields() {
       this.nodeNameA = null;
@@ -263,6 +299,7 @@ export default {
           this.originalData = JSON.parse(tmpData);
           this.data = JSON.parse(tmpData);
           this.items = this.nodes();
+          this.setMaxSensitivityValues();
         });
         reader.readAsText(this.fileToUpload, "utf-8");
       } else {
@@ -273,6 +310,20 @@ export default {
       saveSvgAsPng(document.getElementById("forceGraph-svg"), "graph.png", {
         backgroundColor: "white"
       });
+    },
+    setMaxSensitivityValues() {
+      this.data.links.forEach(item => {
+        if (item.value > this.sliderMaxEdges) {
+          this.sliderMaxEdges = item.value;
+        }
+      });
+      this.data.nodes.forEach(item => {
+        if (item.value > this.sliderMaxNodes) {
+          this.sliderMaxNodes = item.value;
+        }
+      });
+      this.sliderNodes = this.sliderMaxNodes;
+      this.sliderEdges = this.sliderMaxEdges;
     }
   }
 };
