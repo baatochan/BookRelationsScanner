@@ -47,6 +47,8 @@ def main(text, id):
         # print(r)
         i += 1
 
+    gephi_gen(dependendencyTable, personsTable)
+
     r = parseData(dependendencyTable, personsTable)
     f = open("demofile2.txt", "a")
     f.write(json.dumps(r))
@@ -231,6 +233,15 @@ def increaseConnections(dependendencyTable, personsTable,
                 dependendencyTable[person][personRel] += relStr
                 dependendencyTable[personRel][person] += relStr
                 dependendencyTable[person][person] += count[i]
+
+
+def csv_gen(dependendencyTable, personsTable):
+    import pandas as pd
+
+    csv_matrix = {"csv": personsTable}
+    for p in range(0, len(personsTable)):
+        csv_matrix[personsTable[p]] = dependendencyTable[p]
+    pd.DataFrame(csv_matrix).to_csv("gephi.csv", index=None)
 
 
 def parseData(dependendencyTable, personsTable):
