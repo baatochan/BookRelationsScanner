@@ -5,12 +5,27 @@
         :data="getDataFilteredBySensitivity"
         :nodeNameA="nodeNameA"
         :nodeNameB="nodeNameB"
+        :forceSwitch="forceSwitch"
+        :forceSlider="forceSlider"
         ref="forceGraph"
       ></ForceGraph>
     </v-row>
     <v-row>
       <v-col cols="12">
+        <v-row justify="center" align="center">
+          <v-col cols="1">
+            <v-switch v-model="forceSwitch" label="Symulacja"></v-switch>
+          </v-col>
+        </v-row>
         <v-row>
+          <v-col>
+            <v-slider
+              min="0"
+              max="200"
+              v-model="forceSlider"
+              label="Długość krawędzi"
+            />
+          </v-col>
           <v-col>
             <v-slider
               min="0"
@@ -155,6 +170,8 @@ export default {
       sliderMaxNodes: 1,
       sliderEdges: 100,
       sliderMaxEdges: 1,
+      forceSwitch: true,
+      forceSlider: 50,
       nodeNameA: null,
       nodeNameB: null,
       mergeError: false,
@@ -328,3 +345,10 @@ export default {
   }
 };
 </script>
+
+<style>
+.v-input--reverse .v-input__slot {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+</style>
