@@ -148,7 +148,7 @@ export default {
       return axios
         .post(
           "http://127.0.0.1:5000/methodOne",
-          { text: this.text },
+          { name: "test", text: this.text }, // TODO: add field for text name input
           {
             headers: {
               "Content-type": "application/json"
@@ -156,7 +156,7 @@ export default {
           }
         )
         .then(response => {
-          this.submissionId = response.data.id;
+          this.submissionId = response.data;
           this.isSuccessfulResponse = true;
           this.isLoading = false;
         })
