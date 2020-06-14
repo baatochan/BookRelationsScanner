@@ -47,7 +47,7 @@ def main(text, id):
         # print(r)
         i += 1
 
-    gephi_gen(dependendencyTable, personsTable)
+    gdf_nodes(dependendencyTable, personsTable)
 
     r = parseData(dependendencyTable, personsTable)
     f = open("demofile2.txt", "a")
@@ -233,6 +233,29 @@ def increaseConnections(dependendencyTable, personsTable,
                 dependendencyTable[person][personRel] += relStr
                 dependendencyTable[personRel][person] += relStr
                 dependendencyTable[person][person] += count[i]
+
+
+def gdf_nodes(dependendencyTable, personsTable):
+    node_section = "nodedef> name VARCHAR, label VARCHAR, class VARCHAR, value DOUBLE\n"
+
+    for p in range(0, len(personsTable)):
+        occ = dependendencyTable[p][p]
+        node_section += str(p) + "," + personsTable[p] + "," + personClassification(dependendencyTable, personsTable, occ) + "," + str(occ) + "\n"
+
+    print(node_section)
+    return node_section
+
+
+def gdf_edges(dependendencyTable, personsTable):
+    return 1
+
+def gdf_gen(dependendencyTable, personsTable):
+    import pandas as pd
+
+    csv_matrix = {"csv": personsTable}
+    for p in range(0, len(personsTable)):
+        csv_matrix[personsTable[p]] = dependendencyTable[p]
+    pd.DataFrame(csv_matrix).to_csv("gephi.csv", index=None)
 
 
 def csv_gen(dependendencyTable, personsTable):
