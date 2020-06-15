@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer v-model="drawer" app>
     <v-list dense>
-      <v-list-item link to="/visualise-data">
+      <v-list-item link :to="`/visualise-data/0`">
         <v-list-item-content>
           <v-list-item-title class="text-center"
             >Visualise Data</v-list-item-title

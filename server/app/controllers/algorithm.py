@@ -24,8 +24,7 @@ class Algorithm(MethodView):
             return str(500)
 
     def get(self):
-        dataFromJson = request.get_json()
-        gID = dataFromJson['id']
+        gID = request.args.get('id')
         g = Graph.query.filter_by(id=gID).first()
 
         if g.ready:
