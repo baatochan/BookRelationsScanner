@@ -328,7 +328,7 @@ export default {
         .iterations(forceProperties.link.iterations);
       simulation.velocityDecay(this.forceSlider / -100);
       simulation.alphaDecay(0.0228);
-      simulation.alphaTarget(0.4);
+      simulation.alphaTarget(0.2);
       // updates ignored until this is run
       // restarts the simulation (important if simulation has already slowed down)
       simulation.alpha(1).restart();
