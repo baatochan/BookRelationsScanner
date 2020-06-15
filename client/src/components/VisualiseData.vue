@@ -291,6 +291,7 @@ export default {
       }
     },
     changeData() {
+      this.forceSwitch = true;
       // wrapper for fetch basically
       d3.json(this.inputUrl).then(data => {
         this.originalData = JSON.parse(JSON.stringify(data));
