@@ -124,7 +124,7 @@ export default {
     // Add zoom and panning triggers
     this.zoom = d3
       .zoom()
-      .scaleExtent([1 / 4, 4])
+      .scaleExtent([1 / 12, 4])
       .on("zoom", this.zoomed);
     svg.call(this.zoom);
 
@@ -330,7 +330,7 @@ export default {
         .iterations(forceProperties.link.iterations);
       simulation.velocityDecay(0.4);
       simulation.alphaDecay(0.0228);
-      simulation.alphaTarget(0.001);
+      simulation.alphaTarget(0.4);
       // updates ignored until this is run
       // restarts the simulation (important if simulation has already slowed down)
       simulation.alpha(1).restart();
@@ -386,7 +386,7 @@ export default {
     },
     nodeDragEnded(d) {
       if (!d3.event.active) {
-        this.simulation.alphaTarget(0.0001);
+        this.simulation.alphaTarget(0.2);
       } // could be a slider
       d.fx = null;
       d.fy = null;
