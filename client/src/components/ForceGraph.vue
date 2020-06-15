@@ -48,7 +48,7 @@ import * as d3 from "d3";
 import removedNodeTag from "../plugins/const";
 
 export default {
-  props: ["data", "nodeNameA", "nodeNameB"],
+  props: ["data", "nodeNameA", "nodeNameB", "forceSwitch", "forceSlider"],
   data() {
     return {
       width: 1500,
@@ -124,7 +124,7 @@ export default {
     // Add zoom and panning triggers
     this.zoom = d3
       .zoom()
-      .scaleExtent([1 / 4, 4])
+      .scaleExtent([1 / 12, 4])
       .on("zoom", this.zoomed);
     svg.call(this.zoom);
 
@@ -288,6 +288,10 @@ export default {
     },
     updateForces() {
       const { simulation, forceProperties, width, height } = this;
+      if (!this.forceSwitch) {
+        simulation.stop();
+        return;
+      }
       simulation
         .force("center")
         .x(width * forceProperties.center.x)
@@ -322,7 +326,9 @@ export default {
         .force("link")
         .distance(forceProperties.link.distance)
         .iterations(forceProperties.link.iterations);
-
+      simulation.velocityDecay(this.forceSlider / -100);
+      simulation.alphaDecay(0.0228);
+      simulation.alphaTarget(0.2);
       // updates ignored until this is run
       // restarts the simulation (important if simulation has already slowed down)
       simulation.alpha(1).restart();
@@ -361,7 +367,7 @@ export default {
     },
     nodeDragStarted(d) {
       if (!d3.event.active) {
-        this.simulation.alphaTarget(0.3).restart();
+        // this.simulation.alphaTarget(0.3).restart();
       }
       d.fx = d.x;
       d.fy = d.y;
@@ -369,13 +375,22 @@ export default {
     nodeDragged(d) {
       d.fx = d3.event.x;
       d.fy = d3.event.y;
+      if (!this.forceSwitch) {
+        this.simulation.velocityDecay(1);
+        this.simulation.alphaDecay(0.0001).restart();
+      } else {
+        this.simulation.alphaTarget(0.3).restart();
+      }
     },
     nodeDragEnded(d) {
       if (!d3.event.active) {
-        this.simulation.alphaTarget(0.0001);
+        this.simulation.alphaTarget(0.2);
       } // could be a slider
       d.fx = null;
       d.fy = null;
+      if (!this.forceSwitch) {
+        this.simulation.stop();
+      }
     },
     nodeMouseOver(d) {
       const graph = this.selections.graph;
@@ -409,7 +424,7 @@ export default {
       text.classed("faded", true);
       text.filter(df => related.indexOf(df) > -1).classed("highlight", true);
       // This ensures that tick is called so the node count is updated
-      this.simulation.alphaTarget(0.0001).restart();
+      // this.simulation.alphaTarget(0.0001).restart();
     },
     nodeMouseOut() {
       const graph = this.selections.graph;
@@ -424,7 +439,7 @@ export default {
       text.classed("faded", false);
       text.classed("highlight", false);
       // This ensures that tick is called so the node count is updated
-      this.simulation.restart();
+      // this.simulation.restart();
     },
     nodeClick(d) {
       const circle = this.selections.graph.selectAll("circle");
@@ -440,6 +455,18 @@ export default {
       deep: true
     },
     forceProperties: {
+      handler() {
+        this.updateForces();
+      },
+      deep: true
+    },
+    forceSwitch: {
+      handler() {
+        this.updateForces();
+      },
+      deep: true
+    },
+    forceSlider: {
       handler() {
         this.updateForces();
       },

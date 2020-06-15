@@ -5,12 +5,27 @@
         :data="getDataFilteredBySensitivity"
         :nodeNameA="nodeNameA"
         :nodeNameB="nodeNameB"
+        :forceSwitch="forceSwitch"
+        :forceSlider="forceSlider"
         ref="forceGraph"
       ></ForceGraph>
     </v-row>
     <v-row>
       <v-col cols="12">
+        <v-row justify="center" align="center">
+          <v-col cols="1">
+            <v-switch v-model="forceSwitch" label="Symulacja"></v-switch>
+          </v-col>
+        </v-row>
         <v-row>
+          <v-col>
+            <v-slider
+              min="-90"
+              max="-10"
+              v-model="forceSlider"
+              label="Sprężystość"
+            />
+          </v-col>
           <v-col>
             <v-slider
               min="0"
@@ -155,6 +170,8 @@ export default {
       sliderMaxNodes: 1,
       sliderEdges: 100,
       sliderMaxEdges: 1,
+      forceSwitch: true,
+      forceSlider: -50,
       nodeNameA: null,
       nodeNameB: null,
       mergeError: false,
@@ -163,7 +180,7 @@ export default {
       data: null, // Separate data structure for D3
       changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
-        "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/0ecace4aed4f770b3d80f1d57095715f1af66885/data3NoTypes.json",
+        "https://gist.githubusercontent.com/DawidPiechota/cd310d7f93c05a2dd5a164850a44a6f3/raw/e7f87b888f8e7ec92dfa00c7ed2d2909fc23d7a4/dataMiserables.json",
       fileToUpload: null,
       isFileToUpload: null
     };
