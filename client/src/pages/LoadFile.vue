@@ -4,7 +4,7 @@
       :active.sync="isLoading"
       :can-cancel="false"
       :on-cancel="onCancel"
-      :is-full-page="fullPage"
+      :is-full-page="true"
     ></loading>
     <v-row justify="center" align="center">
       <v-row>
@@ -86,7 +86,6 @@ export default {
   data: () => ({
     text: "",
     isLoading: false,
-    fullPage: true,
     isInputBoxShown: true,
     isErrorResponse: false,
     isSuccessfulResponse: false,

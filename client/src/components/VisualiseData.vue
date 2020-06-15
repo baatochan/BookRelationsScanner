@@ -1,5 +1,10 @@
 <template>
   <v-row justify="center" align="center">
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="true"
+    ></loading>
     <v-row>
       <ForceGraph
         :data="getDataFilteredBySensitivity"
@@ -144,11 +149,14 @@ import { saveAs } from "file-saver";
 import { saveSvgAsPng } from "save-svg-as-png";
 import removedNodeTag from "../plugins/const";
 import axios from "axios";
+import Loading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
 
 export default {
   name: "VisualizeData",
   components: {
-    ForceGraph
+    ForceGraph,
+    Loading
   },
   props: ["id"],
   data() {
@@ -168,7 +176,8 @@ export default {
       inputUrl:
         "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/0ecace4aed4f770b3d80f1d57095715f1af66885/data3NoTypes.json",
       fileToUpload: null,
-      isFileToUpload: null
+      isFileToUpload: null,
+      isLoading: true
     };
   },
   computed: {
@@ -280,6 +289,7 @@ export default {
         this.data = JSON.parse(JSON.stringify(data));
         this.items = this.nodes();
         this.setMaxSensitivityValues();
+        this.isLoading = false;
       });
     },
     loadJsonFromDb() {
@@ -296,6 +306,7 @@ export default {
             this.data = response.data.graph.nodesData;
             this.items = this.nodes();
             this.setMaxSensitivityValues();
+            this.isLoading = false;
           } else {
             setTimeout(this.loadJsonFromDb, 2000);
           }
