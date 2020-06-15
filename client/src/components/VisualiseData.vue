@@ -38,7 +38,7 @@
         </v-row>
         <v-row>
           <v-col cols="3" class="text-center">
-            <v-btn @click="changeData()" small color="primary">
+            <v-btn @click="loadJsonFromUrl()" small color="primary">
               Wczytaj dane z adresu
             </v-btn>
           </v-col>
@@ -143,6 +143,7 @@ import * as d3 from "d3";
 import { saveAs } from "file-saver";
 import { saveSvgAsPng } from "save-svg-as-png";
 import removedNodeTag from "../plugins/const";
+import axios from "axios";
 
 export default {
   name: "VisualizeData",
@@ -152,6 +153,7 @@ export default {
   props: ["id"],
   data() {
     return {
+      graphId: -1,
       sliderNodes: 100,
       sliderMaxNodes: 1,
       sliderEdges: 100,
@@ -183,8 +185,12 @@ export default {
     }
   },
   mounted() {
-    this.changeData();
-    console.log(this.$props.id); // added just to show that passed id can be used
+    this.graphId = parseInt(this.$props.id, 10);
+    if (this.graphId === 0) {
+      this.loadJsonFromUrl();
+      return;
+    }
+    this.loadJsonFromDb();
   },
   methods: {
     nodes() {
@@ -266,7 +272,7 @@ export default {
         }
       }
     },
-    changeData() {
+    loadJsonFromUrl() {
       // wrapper for fetch basically
       d3.json(this.inputUrl).then(data => {
         this.originalData = JSON.parse(JSON.stringify(data));
@@ -275,6 +281,28 @@ export default {
         this.items = this.nodes();
         this.setMaxSensitivityValues();
       });
+    },
+    loadJsonFromDb() {
+      return axios
+        .get("http://127.0.0.1:5000/methodOne?id=" + this.graphId, {
+          headers: {
+            "Content-type": "application/json"
+          }
+        })
+        .then(response => {
+          if (response.data.status === "ready") {
+            this.originalData = response.data.graph.nodesData;
+            this.changedData = response.data.graph.nodesData;
+            this.data = response.data.graph.nodesData;
+            this.items = this.nodes();
+            this.setMaxSensitivityValues();
+          } else {
+            setTimeout(this.loadJsonFromDb, 2000);
+          }
+        })
+        .catch(error => {
+          console.log("error: " + error);
+        });
     },
     restore() {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
