@@ -7,21 +7,29 @@
         :nodeNameB="nodeNameB"
         :forceSwitch="forceSwitch"
         :forceSlider="forceSlider"
+        :alphaSwitch="alphaSwitch"
         ref="forceGraph"
       ></ForceGraph>
     </v-row>
     <v-row>
       <v-col cols="12">
         <v-row justify="center" align="center">
-          <v-col cols="1">
+          <v-col cols="2">
             <v-switch v-model="forceSwitch" label="Symulacja"></v-switch>
+          </v-col>
+          <v-col cols="2">
+            <v-switch
+              v-model="alphaSwitch"
+              :disabled="!forceSwitch"
+              label="Przyspieszona Symulacja"
+            ></v-switch>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
             <v-slider
-              min="-90"
-              max="-10"
+              min="1"
+              max="80"
               v-model="forceSlider"
               label="Sprężystość"
             />
@@ -170,8 +178,9 @@ export default {
       sliderMaxNodes: 1,
       sliderEdges: 100,
       sliderMaxEdges: 1,
+      alphaSwitch: false,
       forceSwitch: true,
-      forceSlider: -50,
+      forceSlider: 80,
       nodeNameA: null,
       nodeNameB: null,
       mergeError: false,
