@@ -345,10 +345,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.v-input--reverse .v-input__slot {
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-}
-</style>
