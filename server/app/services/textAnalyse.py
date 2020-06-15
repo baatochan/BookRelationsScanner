@@ -47,7 +47,7 @@ def main(text, id):
         # print(r)
         i += 1
 
-    gdf_nodes(dependendencyTable, personsTable)
+    gdf_gen(dependendencyTable, personsTable)
 
     r = parseData(dependendencyTable, personsTable)
     f = open("demofile2.txt", "a")
@@ -236,26 +236,42 @@ def increaseConnections(dependendencyTable, personsTable,
 
 
 def gdf_nodes(dependendencyTable, personsTable):
-    node_section = "nodedef> name VARCHAR, label VARCHAR, class VARCHAR, value DOUBLE\n"
+    node_section = \
+        "nodedef> name VARCHAR, label VARCHAR, class VARCHAR, value DOUBLE\n"
 
     for p in range(0, len(personsTable)):
         occ = dependendencyTable[p][p]
-        node_section += str(p) + "," + personsTable[p] + "," + personClassification(dependendencyTable, personsTable, occ) + "," + str(occ) + "\n"
+        node_section += str(p) + "," + personsTable[p] + "," + \
+            personClassification(dependendencyTable, personsTable, occ) + \
+            "," + str(occ) + "\n"
 
-    print(node_section)
     return node_section
 
 
 def gdf_edges(dependendencyTable, personsTable):
-    return 1
+    edge_section = \
+        "edgedef> source VARCHAR, target VARCHAR, type VARCHAR, value DOUBLE\n"
+
+    for y in range(0, len(personsTable) - 1):
+        for x in range(y + 1, len(personsTable)):
+            edge = dependendencyTable[y][x]
+            edge_section += str(y) + "," + str(x) + "," + \
+                connectionClassification(
+                    dependendencyTable, personsTable, edge) + \
+                "," + str(edge) + "\n"
+
+    return edge_section
+
 
 def gdf_gen(dependendencyTable, personsTable):
-    import pandas as pd
+    f = open("gephi.gdf", "w")
 
-    csv_matrix = {"csv": personsTable}
-    for p in range(0, len(personsTable)):
-        csv_matrix[personsTable[p]] = dependendencyTable[p]
-    pd.DataFrame(csv_matrix).to_csv("gephi.csv", index=None)
+    nodes = gdf_nodes(dependendencyTable, personsTable)
+    f.write(nodes)
+
+    edges = gdf_edges(dependendencyTable, personsTable)
+    f.write(edges)
+    f.close()
 
 
 def csv_gen(dependendencyTable, personsTable):
