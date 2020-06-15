@@ -299,9 +299,7 @@ export default {
       simulation
         .force("charge")
         .strength(
-          forceProperties.charge.strength *
-            forceProperties.charge.enabled *
-            (this.forceSlider / 50)
+          forceProperties.charge.strength * forceProperties.charge.enabled
         )
         .distanceMin(forceProperties.charge.distanceMin)
         .distanceMax(forceProperties.charge.distanceMax);
@@ -328,7 +326,7 @@ export default {
         .force("link")
         .distance(forceProperties.link.distance)
         .iterations(forceProperties.link.iterations);
-      simulation.velocityDecay(0.4);
+      simulation.velocityDecay(this.forceSlider / -100);
       simulation.alphaDecay(0.0228);
       simulation.alphaTarget(0.4);
       // updates ignored until this is run

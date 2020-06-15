@@ -20,10 +20,10 @@
         <v-row>
           <v-col>
             <v-slider
-              min="0"
-              max="200"
+              min="-90"
+              max="-10"
               v-model="forceSlider"
-              label="Długość krawędzi"
+              label="Sprężystość"
             />
           </v-col>
           <v-col>
