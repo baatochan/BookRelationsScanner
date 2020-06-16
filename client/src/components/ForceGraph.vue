@@ -48,7 +48,14 @@ import * as d3 from "d3";
 import removedNodeTag from "../plugins/const";
 
 export default {
-  props: ["data", "nodeNameA", "nodeNameB", "forceSwitch", "forceSlider"],
+  props: [
+    "data",
+    "nodeNameA",
+    "nodeNameB",
+    "forceSwitch",
+    "forceSlider",
+    "alphaSwitch"
+  ],
   data() {
     return {
       width: 1500,
@@ -326,11 +333,9 @@ export default {
         .force("link")
         .distance(forceProperties.link.distance)
         .iterations(forceProperties.link.iterations);
-      simulation.velocityDecay(this.forceSlider / -100);
+      simulation.velocityDecay((100 - this.forceSlider) / 100);
       simulation.alphaDecay(0.0228);
-      simulation.alphaTarget(0.2);
-      // updates ignored until this is run
-      // restarts the simulation (important if simulation has already slowed down)
+      simulation.alphaTarget(0.05 + this.alphaSwitch * 0.4);
       simulation.alpha(1).restart();
     },
     updateNodeLinkCount() {
@@ -384,8 +389,8 @@ export default {
     },
     nodeDragEnded(d) {
       if (!d3.event.active) {
-        this.simulation.alphaTarget(0.2);
-      } // could be a slider
+        this.simulation.alphaTarget(0.05 + this.alphaSwitch * 0.4);
+      }
       d.fx = null;
       d.fy = null;
       if (!this.forceSwitch) {
@@ -455,6 +460,12 @@ export default {
       deep: true
     },
     forceProperties: {
+      handler() {
+        this.updateForces();
+      },
+      deep: true
+    },
+    alphaSwitch: {
       handler() {
         this.updateForces();
       },
