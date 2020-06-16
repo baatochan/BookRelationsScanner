@@ -257,7 +257,7 @@ export default {
         if (this.changedData.nodes[i].name === this.nodeNameA) {
           for (let j = 0; j < this.changedData.nodes.length; j++) {
             if (this.changedData.nodes[j].name === this.nodeNameB) {
-              const sum = Math.max(
+              const sum = Math.min(
                 100,
                 parseInt(this.changedData.nodes[i].occurrence) +
                   parseInt(this.changedData.nodes[j].occurrence)
@@ -287,15 +287,12 @@ export default {
 
         switch (linkType) {
           case 1:
-            this.changedData.links[i].source = indexB; // source jest A, zamieniamy na B
-            // znajdź połączenie takie że, (source=indexA i target=i) i dodaj do links[i] jego wartość
+            this.changedData.links[i].source = indexB;
             break;
           case 2:
-            this.changedData.links[i].target = indexB; // target jest A, zamieniamy na B
-            // znajdź takie połączenie, że (target=indexA i source=i) i dodaj do links[i] jego wartość
+            this.changedData.links[i].target = indexB;
             break;
           case 3:
-            // this.changedData.links.splice(i, 1); dalej powoduje błędy. Na razie zostawię tak, powinno działać bez tego
             break;
           default:
           // not possible
