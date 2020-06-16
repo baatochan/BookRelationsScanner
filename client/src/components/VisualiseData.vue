@@ -1,20 +1,28 @@
 <template>
-  <v-row justify="center" align="center">
-    <loading
-      :active.sync="isLoading"
-      :can-cancel="false"
-      :is-full-page="true"
-    ></loading>
+  <v-container>
     <v-row>
-      <ForceGraph
-        :data="getDataFilteredBySensitivity"
-        :nodeNameA="nodeNameA"
-        :nodeNameB="nodeNameB"
-        :forceSwitch="forceSwitch"
-        :forceSlider="forceSlider"
-        :alphaSwitch="alphaSwitch"
-        ref="forceGraph"
-      ></ForceGraph>
+      <v-col cols="12" align="center" v-show="isLoading">
+        <v-progress-circular
+          :indeterminate="true"
+          :size="19"
+          :width="3"
+          style="margin-right: 5px;"
+        ></v-progress-circular>
+        Tekst jest analizowany. Wróć później.
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <ForceGraph
+          :data="getDataFilteredBySensitivity"
+          :nodeNameA="nodeNameA"
+          :nodeNameB="nodeNameB"
+          :forceSwitch="forceSwitch"
+          :forceSlider="forceSlider"
+          :alphaSwitch="alphaSwitch"
+          ref="forceGraph"
+        ></ForceGraph>
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -162,7 +170,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -172,14 +180,11 @@ import { saveAs } from "file-saver";
 import { saveSvgAsPng } from "save-svg-as-png";
 import removedNodeTag from "../plugins/const";
 import axios from "axios";
-import Loading from "vue-loading-overlay";
-import "vue-loading-overlay/dist/vue-loading.css";
 
 export default {
   name: "VisualizeData",
   components: {
-    ForceGraph,
-    Loading
+    ForceGraph
   },
   props: ["id"],
   data() {
