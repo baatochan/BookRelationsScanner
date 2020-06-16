@@ -18,6 +18,13 @@
           <v-list-item-title class="text-center">Load File</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item link to="/graph-list">
+        <v-list-item-content>
+          <v-list-item-title class="text-center"
+            >Lista Grafów</v-list-item-title
+          >
+        </v-list-item-content>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
