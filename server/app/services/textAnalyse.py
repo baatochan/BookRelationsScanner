@@ -47,10 +47,8 @@ def main(text, id):
         # print(r)
         i += 1
 
-    gdf_gen(dependendencyTable, personsTable)
-
     r = parseData(dependendencyTable, personsTable)
-    f = open("demofile2.txt", "a")
+    f = open("demofile2.json", "a")
     f.write(json.dumps(r))
     f.close()
 
@@ -233,45 +231,6 @@ def increaseConnections(dependendencyTable, personsTable,
                 dependendencyTable[person][personRel] += relStr
                 dependendencyTable[personRel][person] += relStr
                 dependendencyTable[person][person] += count[i]
-
-
-def gdf_nodes(dependendencyTable, personsTable):
-    node_section = \
-        "nodedef> name VARCHAR, label VARCHAR, class VARCHAR, value DOUBLE\n"
-
-    for p in range(0, len(personsTable)):
-        occ = dependendencyTable[p][p]
-        node_section += str(p) + "," + personsTable[p] + "," + \
-            personClassification(dependendencyTable, personsTable, occ) + \
-            "," + str(occ) + "\n"
-
-    return node_section
-
-
-def gdf_edges(dependendencyTable, personsTable):
-    edge_section = \
-        "edgedef> source VARCHAR, target VARCHAR, type VARCHAR, value DOUBLE\n"
-
-    for y in range(0, len(personsTable) - 1):
-        for x in range(y + 1, len(personsTable)):
-            edge = dependendencyTable[y][x]
-            edge_section += str(y) + "," + str(x) + "," + \
-                connectionClassification(
-                    dependendencyTable, personsTable, edge) + \
-                "," + str(edge) + "\n"
-
-    return edge_section
-
-
-def gdf_gen(dependendencyTable, personsTable):
-    f = open("gephi.gdf", "w")
-
-    nodes = gdf_nodes(dependendencyTable, personsTable)
-    f.write(nodes)
-
-    edges = gdf_edges(dependendencyTable, personsTable)
-    f.write(edges)
-    f.close()
 
 
 def csv_gen(dependendencyTable, personsTable):
