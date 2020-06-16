@@ -230,6 +230,27 @@ def increaseConnections(dependendencyTable, personsTable,
                 dependendencyTable[person][person] += count[i]
 
 
+def check_conn_threshold(conn, threshold):
+    if (conn <= threshold):
+        return True
+    else:
+        return False
+
+
+def calc_conn_threshold(dependendencyTable, perc=5, edge_thresh=1500):
+    edge_max = len(dependendencyTable) ** 2
+    edges = []
+    for i in range(0, len(dependendencyTable)):
+        for j in range(0, len(dependendencyTable)):
+            edges.append(dependendencyTable[i][j])
+    edges.sort()
+    if (edge_max > edge_thresh):
+        return edges[edge_max - 1 - edge_thresh]
+    else:
+        rm_edge = int((edge_max - 1) * perc / 100)
+        return edges[rm_edge]
+
+
 def parseData(dependendencyTable, personsTable):
     x = ''
     x += '{'
@@ -255,16 +276,18 @@ def parseData(dependendencyTable, personsTable):
     z = 0
 
     max = maxValOfConnection(dependendencyTable, personsTable)
+    thresh = calc_conn_threshold(dependendencyTable)
 
     for i in range(0, lenP):
         for j in range(1+z, lenP):
-            data += '{ "source": ' + str(i) + ', "target": ' + str(j) + \
+            if (not check_conn_threshold(dependendencyTable[i][j], thresh)):
+                data += '{ "source": ' + str(i) + ', "target": ' + str(j) + \
                     ', "value": ' + \
-                str(int(dependendencyTable[i][j] / max * 100)) + \
-                ', "type": "' + \
-                connectionClassification(dependendencyTable, personsTable,
-                                         dependendencyTable[i][j]) + '" }'
-            data += ', '
+                    str(int(dependendencyTable[i][j] / max * 100)) + \
+                    ', "type": "' + \
+                    connectionClassification(dependendencyTable, personsTable,
+                                             dependendencyTable[i][j]) + '" }'
+                data += ', '
         z += 1
 
     data = data[:-2]
