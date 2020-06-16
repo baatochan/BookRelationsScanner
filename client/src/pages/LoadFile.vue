@@ -36,6 +36,17 @@
             </v-col>
           </v-row>
           <v-row v-show="isInputBoxShown">
+            <v-col cols="4"></v-col>
+            <v-col cols="4" align="center">
+              <v-text-field
+                v-model="textName"
+                label="Name of text"
+                placeholder="eg. J. Biernat - Architektura komputerów"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4"></v-col>
+          </v-row>
+          <v-row v-show="isInputBoxShown">
             <v-col cols="2"></v-col>
             <v-col cols="8" align="center">
               <v-textarea
@@ -85,6 +96,7 @@ import axios from "axios";
 export default {
   data: () => ({
     text: "",
+    textName: "",
     isLoading: false,
     isInputBoxShown: true,
     isErrorResponse: false,
@@ -147,7 +159,7 @@ export default {
       return axios
         .post(
           "http://127.0.0.1:5000/methodOne",
-          { name: "test", text: this.text }, // TODO: add field for text name input
+          { name: this.textName, text: this.text },
           {
             headers: {
               "Content-type": "application/json"
@@ -158,6 +170,7 @@ export default {
           this.submissionId = response.data;
           this.isSuccessfulResponse = true;
           this.isLoading = false;
+          this.$router.push("visualise-data/" + this.submissionId);
         })
         .catch(error => {
           console.log("error: " + error);
@@ -176,7 +189,7 @@ export default {
 <style>
 #textinput-textarea {
   width: 60%;
-  height: 500px;
+  height: 350px;
 }
 
 #text-reader {
