@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import LoadFile from "../pages/LoadFile";
 import ForceGraph from "../components/ForceGraph";
 import VisualiseData from "../components/VisualiseData";
+import GraphList from "../pages/GraphList";
 
 Vue.use(Router);
 
@@ -23,14 +24,20 @@ export default new Router({
     },
 
     {
-      path: "/visualise-data",
+      path: "/visualise-data/:id",
       name: "VisualiseData",
-      component: VisualiseData
+      component: VisualiseData,
+      props: true
     },
     {
       path: "/load-file",
       name: "LoadFile",
       component: LoadFile
+    },
+    {
+      path: "/graph-list",
+      name: "GraphList",
+      component: GraphList
     }
   ]
 });

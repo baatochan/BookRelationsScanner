@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 click
 flake8
 requests
+flask-cors

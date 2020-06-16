@@ -4,7 +4,7 @@
       :active.sync="isLoading"
       :can-cancel="false"
       :on-cancel="onCancel"
-      :is-full-page="fullPage"
+      :is-full-page="true"
     ></loading>
     <v-row justify="center" align="center">
       <v-row>
@@ -14,7 +14,39 @@
               <h1>Load text for analysis</h1>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row v-show="isErrorResponse">
+            <v-col cols="12" align="center">
+              <p style="color:red;">
+                There was an error while sending your data. Try again.
+              </p>
+            </v-col>
+          </v-row>
+          <v-row v-show="isSuccessfulResponse">
+            <v-col cols="12" align="center">
+              <p>
+                Your data has been successfully submitted.
+              </p>
+              <p>Your submission ID is {{ this.submissionId }}.</p>
+              <p>
+                It will be available when processed
+                <router-link :to="`/visualise-data/${this.submissionId}`"
+                  >here</router-link
+                >.
+              </p>
+            </v-col>
+          </v-row>
+          <v-row v-show="isInputBoxShown">
+            <v-col cols="4"></v-col>
+            <v-col cols="4" align="center">
+              <v-text-field
+                v-model="textName"
+                label="Name of text"
+                placeholder="eg. J. Biernat - Architektura komputerów"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4"></v-col>
+          </v-row>
+          <v-row v-show="isInputBoxShown">
             <v-col cols="2"></v-col>
             <v-col cols="8" align="center">
               <v-textarea
@@ -27,7 +59,7 @@
             </v-col>
             <v-col cols="2"></v-col>
           </v-row>
-          <v-row>
+          <v-row v-show="isInputBoxShown">
             <v-col cols="12" align="center">
               <p style="margin-bottom: 10px;">
                 or upload a file below. Supported files: txt, pdf.
@@ -42,9 +74,11 @@
               </label>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row v-show="isInputBoxShown">
             <v-col cols="12" align="center">
-              <v-btn color="success">Send for analysis</v-btn>
+              <v-btn color="success" v-on:click="submitData"
+                >Send for analysis</v-btn
+              >
             </v-col>
           </v-row>
         </v-col>
@@ -57,9 +91,18 @@
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 import pdfjsLib from "pdfjs-dist";
+import axios from "axios";
 
 export default {
-  data: () => ({ text: "", isLoading: false, fullPage: true }),
+  data: () => ({
+    text: "",
+    textName: "",
+    isLoading: false,
+    isInputBoxShown: true,
+    isErrorResponse: false,
+    isSuccessfulResponse: false,
+    submissionId: -1
+  }),
   methods: {
     loadTextFromFile(ev) {
       this.isLoading = true;
@@ -108,6 +151,33 @@ export default {
           .join(" ");
       });
       return (await Promise.all(pageTexts)).join("\n");
+    },
+    submitData(ev) {
+      this.isLoading = true;
+      this.isInputBoxShown = false;
+      this.isErrorResponse = false;
+      return axios
+        .post(
+          "http://127.0.0.1:5000/methodOne",
+          { name: this.textName, text: this.text },
+          {
+            headers: {
+              "Content-type": "application/json"
+            }
+          }
+        )
+        .then(response => {
+          this.submissionId = response.data;
+          this.isSuccessfulResponse = true;
+          this.isLoading = false;
+          this.$router.push("visualise-data/" + this.submissionId);
+        })
+        .catch(error => {
+          console.log("error: " + error);
+          this.isInputBoxShown = true;
+          this.isErrorResponse = true;
+          this.isLoading = false;
+        });
     }
   },
   components: {
@@ -119,7 +189,7 @@ export default {
 <style>
 #textinput-textarea {
   width: 60%;
-  height: 500px;
+  height: 350px;
 }
 
 #text-reader {

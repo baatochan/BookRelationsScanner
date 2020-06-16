@@ -48,7 +48,14 @@ import * as d3 from "d3";
 import removedNodeTag from "../plugins/const";
 
 export default {
-  props: ["data", "nodeNameA", "nodeNameB"],
+  props: [
+    "data",
+    "nodeNameA",
+    "nodeNameB",
+    "forceSwitch",
+    "forceSlider",
+    "alphaSwitch"
+  ],
   data() {
     return {
       width: 1500,
@@ -56,7 +63,6 @@ export default {
       gridSize: 100,
       selections: {},
       simulation: null,
-      hippieMode: false,
       forceProperties: {
         center: {
           x: 0.5,
@@ -125,7 +131,7 @@ export default {
     // Add zoom and panning triggers
     this.zoom = d3
       .zoom()
-      .scaleExtent([1 / 4, 4])
+      .scaleExtent([1 / 12, 4])
       .on("zoom", this.zoomed);
     svg.call(this.zoom);
 
@@ -163,19 +169,6 @@ export default {
           (1 << 24) +
           ((255 - Math.floor((percent / 100.0) * 255.0)) << 16) +
           ((255 - Math.floor((136 * percent) / 100)) << 8) +
-          255
-        )
-          .toString(16)
-          .slice(1)
-      );
-    },
-    nicerNodeColor(percent) {
-      return (
-        "#" +
-        (
-          (1 << 24) +
-          ((255 - Math.floor((percent / 100.0) * 255.0)) << 16) +
-          ((136 + Math.floor((percent / 100) * (255 - 136))) << 8) +
           255
         )
           .toString(16)
@@ -247,11 +240,7 @@ export default {
         .data(this.links)
         .enter()
         .append("path")
-        .attr("stroke", d => {
-          if (this.hippieMode)
-            return this.nicerNodeColor(Math.max(15, d.value));
-          else return this.nodeColor(Math.max(15, d.value));
-        })
+        .attr("stroke", d => this.nodeColor(Math.max(15, d.value)))
         .attr("stroke-width", d => Math.sqrt(d.value / 4));
 
       // Redrawing nodes to avoid lines above them
@@ -263,10 +252,7 @@ export default {
         .append("circle")
         .attr("r", 30)
         .attr("class", "circle")
-        .attr("fill", d => {
-          if (this.hippieMode) return this.nicerNodeColor(d.occurrence);
-          else return this.nodeColor(d.occurrence);
-        })
+        .attr("fill", d => this.nodeColor(d.occurrence))
         .call(
           d3
             .drag()
@@ -309,6 +295,10 @@ export default {
     },
     updateForces() {
       const { simulation, forceProperties, width, height } = this;
+      if (!this.forceSwitch) {
+        simulation.stop();
+        return;
+      }
       simulation
         .force("center")
         .x(width * forceProperties.center.x)
@@ -343,9 +333,9 @@ export default {
         .force("link")
         .distance(forceProperties.link.distance)
         .iterations(forceProperties.link.iterations);
-
-      // updates ignored until this is run
-      // restarts the simulation (important if simulation has already slowed down)
+      simulation.velocityDecay((100 - this.forceSlider) / 100);
+      simulation.alphaDecay(0.0228);
+      simulation.alphaTarget(0.05 + this.alphaSwitch * 0.4);
       simulation.alpha(1).restart();
     },
     updateNodeLinkCount() {
@@ -382,7 +372,7 @@ export default {
     },
     nodeDragStarted(d) {
       if (!d3.event.active) {
-        this.simulation.alphaTarget(0.3).restart();
+        // this.simulation.alphaTarget(0.3).restart();
       }
       d.fx = d.x;
       d.fy = d.y;
@@ -390,13 +380,22 @@ export default {
     nodeDragged(d) {
       d.fx = d3.event.x;
       d.fy = d3.event.y;
+      if (!this.forceSwitch) {
+        this.simulation.velocityDecay(1);
+        this.simulation.alphaDecay(0.0001).restart();
+      } else {
+        this.simulation.alphaTarget(0.3).restart();
+      }
     },
     nodeDragEnded(d) {
       if (!d3.event.active) {
-        this.simulation.alphaTarget(0.0001);
-      } // could be a slider
+        this.simulation.alphaTarget(0.05 + this.alphaSwitch * 0.4);
+      }
       d.fx = null;
       d.fy = null;
+      if (!this.forceSwitch) {
+        this.simulation.stop();
+      }
     },
     nodeMouseOver(d) {
       const graph = this.selections.graph;
@@ -430,7 +429,7 @@ export default {
       text.classed("faded", true);
       text.filter(df => related.indexOf(df) > -1).classed("highlight", true);
       // This ensures that tick is called so the node count is updated
-      this.simulation.alphaTarget(0.0001).restart();
+      // this.simulation.alphaTarget(0.0001).restart();
     },
     nodeMouseOut() {
       const graph = this.selections.graph;
@@ -445,16 +444,12 @@ export default {
       text.classed("faded", false);
       text.classed("highlight", false);
       // This ensures that tick is called so the node count is updated
-      this.simulation.restart();
+      // this.simulation.restart();
     },
     nodeClick(d) {
       const circle = this.selections.graph.selectAll("circle");
       circle.classed("selected", false);
       circle.filter(td => td === d).classed("selected", true);
-      this.hippieMode = !this.hippieMode;
-      this.updateData();
-      const svg = this.selections.svg;
-      svg.selectAll("rect").classed("veryImportant", this.hippieMode);
     }
   },
   watch: {
@@ -465,6 +460,24 @@ export default {
       deep: true
     },
     forceProperties: {
+      handler() {
+        this.updateForces();
+      },
+      deep: true
+    },
+    alphaSwitch: {
+      handler() {
+        this.updateForces();
+      },
+      deep: true
+    },
+    forceSwitch: {
+      handler() {
+        this.updateForces();
+      },
+      deep: true
+    },
+    forceSlider: {
       handler() {
         this.updateForces();
       },
@@ -517,29 +530,6 @@ export default {
   stroke: rgb(0, 0, 0);
   stroke-width: 1px;
   animation: selected 0.5s 4 alternate ease-in-out;
-}
-
-#grid .veryImportant {
-  stroke-width: 1px;
-  animation: evenMoreImportant 2s infinite ease-in-out;
-}
-
-@keyframes evenMoreImportant {
-  0% {
-    stroke: #b967ff;
-  }
-  25% {
-    stroke: #01cdfe;
-  }
-  50% {
-    stroke: #01cdfe;
-  }
-  75% {
-    stroke: #01cdfe;
-  }
-  100% {
-    stroke: #b967ff;
-  }
 }
 
 @keyframes selected {

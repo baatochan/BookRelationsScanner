@@ -1,16 +1,52 @@
 <template>
-  <v-row justify="center" align="center">
+  <v-container>
     <v-row>
-      <ForceGraph
-        :data="getDataFilteredBySensitivity"
-        :nodeNameA="nodeNameA"
-        :nodeNameB="nodeNameB"
-        ref="forceGraph"
-      ></ForceGraph>
+      <v-col cols="12" align="center" v-show="isLoading">
+        <v-progress-circular
+          :indeterminate="true"
+          :size="19"
+          :width="3"
+          style="margin-right: 5px;"
+        ></v-progress-circular>
+        Tekst jest analizowany. Wróć później.
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
+        <ForceGraph
+          :data="getDataFilteredBySensitivity"
+          :nodeNameA="nodeNameA"
+          :nodeNameB="nodeNameB"
+          :forceSwitch="forceSwitch"
+          :forceSlider="forceSlider"
+          :alphaSwitch="alphaSwitch"
+          ref="forceGraph"
+        ></ForceGraph>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-row justify="center" align="center">
+          <v-col cols="2">
+            <v-switch v-model="forceSwitch" label="Symulacja"></v-switch>
+          </v-col>
+          <v-col cols="2">
+            <v-switch
+              v-model="alphaSwitch"
+              :disabled="!forceSwitch"
+              label="Przyspieszona Symulacja"
+            ></v-switch>
+          </v-col>
+        </v-row>
         <v-row>
+          <v-col>
+            <v-slider
+              min="1"
+              max="80"
+              v-model="forceSlider"
+              label="Sprężystość"
+            />
+          </v-col>
           <v-col>
             <v-slider
               min="0"
@@ -38,7 +74,7 @@
         </v-row>
         <v-row>
           <v-col cols="3" class="text-center">
-            <v-btn @click="changeData()" small color="primary">
+            <v-btn @click="loadJsonFromUrl()" small color="primary">
               Wczytaj dane z adresu
             </v-btn>
           </v-col>
@@ -134,7 +170,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -143,18 +179,24 @@ import * as d3 from "d3";
 import { saveAs } from "file-saver";
 import { saveSvgAsPng } from "save-svg-as-png";
 import removedNodeTag from "../plugins/const";
+import axios from "axios";
 
 export default {
   name: "VisualizeData",
   components: {
     ForceGraph
   },
+  props: ["id"],
   data() {
     return {
+      graphId: -1,
       sliderNodes: 100,
       sliderMaxNodes: 1,
       sliderEdges: 100,
       sliderMaxEdges: 1,
+      alphaSwitch: false,
+      forceSwitch: true,
+      forceSlider: 80,
       nodeNameA: null,
       nodeNameB: null,
       mergeError: false,
@@ -163,9 +205,10 @@ export default {
       data: null, // Separate data structure for D3
       changedData: null, // Data to be worked with. Structure unchanged by d3
       inputUrl:
-        "https://gist.githubusercontent.com/DawidPiechota/2cee2d1c35f68b619164f7c2797be57e/raw/0ecace4aed4f770b3d80f1d57095715f1af66885/data3NoTypes.json",
+        "https://gist.githubusercontent.com/DawidPiechota/cd310d7f93c05a2dd5a164850a44a6f3/raw/e7f87b888f8e7ec92dfa00c7ed2d2909fc23d7a4/dataMiserables.json",
       fileToUpload: null,
-      isFileToUpload: null
+      isFileToUpload: null,
+      isLoading: true
     };
   },
   computed: {
@@ -184,7 +227,12 @@ export default {
     }
   },
   mounted() {
-    this.changeData();
+    this.graphId = parseInt(this.$props.id, 10);
+    if (this.graphId === 0) {
+      this.loadJsonFromUrl();
+      return;
+    }
+    this.loadJsonFromDb();
   },
   methods: {
     nodes() {
@@ -266,7 +314,8 @@ export default {
         }
       }
     },
-    changeData() {
+    loadJsonFromUrl() {
+      this.forceSwitch = true;
       // wrapper for fetch basically
       d3.json(this.inputUrl).then(data => {
         this.originalData = JSON.parse(JSON.stringify(data));
@@ -274,7 +323,31 @@ export default {
         this.data = JSON.parse(JSON.stringify(data));
         this.items = this.nodes();
         this.setMaxSensitivityValues();
+        this.isLoading = false;
       });
+    },
+    loadJsonFromDb() {
+      return axios
+        .get("http://127.0.0.1:5000/methodOne?id=" + this.graphId, {
+          headers: {
+            "Content-type": "application/json"
+          }
+        })
+        .then(response => {
+          if (response.data.status === "ready") {
+            this.originalData = response.data.graph.nodesData;
+            this.changedData = response.data.graph.nodesData;
+            this.data = response.data.graph.nodesData;
+            this.items = this.nodes();
+            this.setMaxSensitivityValues();
+            this.isLoading = false;
+          } else {
+            setTimeout(this.loadJsonFromDb, 2000);
+          }
+        })
+        .catch(error => {
+          console.log("error: " + error);
+        });
     },
     restore() {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
