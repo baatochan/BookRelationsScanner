@@ -98,6 +98,7 @@
         <v-divider class="mx-4"></v-divider>
         <v-spacer></v-spacer>
         <v-row align="center" justify="center">
+          <v-col cols="3"></v-col>
           <v-col cols="3">
             <v-autocomplete
               v-model="nodeNameA"
@@ -116,7 +117,7 @@
               label="Drugi byt (zachowaj)"
             ></v-autocomplete>
           </v-col>
-          <v-col cols="3">
+          <v-col cols="1">
             <v-btn
               v-if="nodeNameA || nodeNameB"
               @click="clearMergeFields()"
@@ -126,18 +127,21 @@
               >Wyczyść
             </v-btn>
           </v-col>
+          <v-col cols="2"></v-col>
         </v-row>
         <v-row>
-          <v-col cols="4" class="text-center">
+          <v-col cols="3"></v-col>
+          <v-col cols="3" class="text-center">
             <v-btn @click="mergeNodes()" small color="primary">
               Połącz byty
             </v-btn>
           </v-col>
-          <v-col cols="4" class="text-center">
+          <v-col cols="3" class="text-center">
             <v-btn @click="restore()" small color="primary">
               Przywróć zmiany
             </v-btn>
           </v-col>
+          <v-col cols="3"></v-col>
         </v-row>
       </v-col>
     </v-row>
