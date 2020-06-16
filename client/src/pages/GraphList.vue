@@ -7,23 +7,15 @@
         <th>Status</th>
         <th>Wyświetl</th>
       </tr>
-      <tr>
-        <td>1</td>
-        <td>test</td>
-        <td>1</td>
-        <td>przejdź</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>test2</td>
-        <td>1</td>
-        <td>przejdź</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>test3</td>
-        <td>1</td>
-        <td>przejdź</td>
+      <tr v-for="(item, index) in graphs" :key="index">
+        <td class="text-center">{{ item[0] }}</td>
+        <td class="text-center">{{ item[1] }}</td>
+        <td class="text-center">{{ item[2] }}</td>
+        <td class="text-center">
+          <v-btn color="primary" :to="'/visualise-data/' + item[0]"
+            >Przejdź</v-btn
+          >
+        </td>
       </tr>
     </table>
   </div>
@@ -35,15 +27,8 @@ import axios from "axios";
 export default {
   data() {
     return {
-      graphs: [],
-      errors: []
+      graphs: []
     };
-  },
-
-  methods: {
-    log(message) {
-      console.log(message);
-    }
   },
   created() {
     axios
@@ -55,8 +40,7 @@ export default {
       })
 
       .then(response => {
-        this.graphs = response.data;
-        console.log(JSON.phrase(response));
+        this.graphs = response.data.ghraps;
       })
       .catch(e => {
         this.errors.push(e);
