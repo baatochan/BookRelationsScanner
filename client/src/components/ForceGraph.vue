@@ -241,7 +241,7 @@ export default {
         .enter()
         .append("path")
         .attr("stroke", d => this.nodeColor(Math.max(15, d.value)))
-        .attr("stroke-width", d => Math.sqrt(d.value / 4));
+        .attr("stroke-width", d => Math.max(1, Math.sqrt(d.value / 4)));
 
       // Redrawing nodes to avoid lines above them
       graph.selectAll("circle").remove();
