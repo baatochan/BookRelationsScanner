@@ -245,8 +245,8 @@ def parseData(dependendencyTable, personsTable):
                                   personsTable,
                                   dependendencyTable[p][p])
         x += '", '
-        x += '"occurrence": "' + str(dependendencyTable[p][p])
-        x += '" }'
+        x += '"occurrence": ' + str(dependendencyTable[p][p])
+        x += ' }'
     x += '],'
     x += ' "links": ['
 
