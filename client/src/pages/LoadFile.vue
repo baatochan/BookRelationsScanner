@@ -158,6 +158,7 @@ export default {
           this.submissionId = response.data;
           this.isSuccessfulResponse = true;
           this.isLoading = false;
+          this.$router.push("visualise-data/" + this.submissionId);
         })
         .catch(error => {
           console.log("error: " + error);
