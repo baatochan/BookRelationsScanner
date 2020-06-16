@@ -10,7 +10,7 @@ class Algorithm(MethodView):
         dataFromJson = request.get_json()
         n = dataFromJson['name']
         g = Graph(ready=0, nodesData="", name=n,
-                      settings="")
+                  settings="")
         db.session.add(g)
         db.session.commit()
 
