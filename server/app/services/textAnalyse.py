@@ -257,6 +257,7 @@ def parseData(dependendencyTable, personsTable):
     x += '"nodes": ['
     pLen = len(personsTable)
 
+    maxP = maxPersonCnt(dependendencyTable, personsTable)
     for p in range(0, pLen):
         if p != 0:
             x += ', '
@@ -266,7 +267,7 @@ def parseData(dependendencyTable, personsTable):
                                   personsTable,
                                   dependendencyTable[p][p])
         x += '", '
-        x += '"occurrence": ' + str(dependendencyTable[p][p])
+        x += '"occurrence": ' + str(int(dependendencyTable[p][p]/maxP*100))
         x += ' }'
     x += '],'
     x += ' "links": ['

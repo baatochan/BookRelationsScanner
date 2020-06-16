@@ -252,7 +252,9 @@ export default {
         .append("circle")
         .attr("r", 30)
         .attr("class", "circle")
-        .attr("fill", d => this.nodeColor(d.occurrence))
+        .attr("fill", d =>
+          this.nodeColor(Math.max(10, Math.min(100, d.occurrence)))
+        )
         .call(
           d3
             .drag()
