@@ -1,5 +1,10 @@
 <template>
   <v-row justify="center" align="center">
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="true"
+    ></loading>
     <v-row>
       <ForceGraph
         :data="getDataFilteredBySensitivity"
@@ -61,7 +66,7 @@
         </v-row>
         <v-row>
           <v-col cols="3" class="text-center">
-            <v-btn @click="changeData()" small color="primary">
+            <v-btn @click="loadJsonFromUrl()" small color="primary">
               Wczytaj dane z adresu
             </v-btn>
           </v-col>
@@ -166,14 +171,20 @@ import * as d3 from "d3";
 import { saveAs } from "file-saver";
 import { saveSvgAsPng } from "save-svg-as-png";
 import removedNodeTag from "../plugins/const";
+import axios from "axios";
+import Loading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
 
 export default {
   name: "VisualizeData",
   components: {
-    ForceGraph
+    ForceGraph,
+    Loading
   },
+  props: ["id"],
   data() {
     return {
+      graphId: -1,
       sliderNodes: 100,
       sliderMaxNodes: 1,
       sliderEdges: 100,
@@ -191,7 +202,8 @@ export default {
       inputUrl:
         "https://gist.githubusercontent.com/DawidPiechota/cd310d7f93c05a2dd5a164850a44a6f3/raw/e7f87b888f8e7ec92dfa00c7ed2d2909fc23d7a4/dataMiserables.json",
       fileToUpload: null,
-      isFileToUpload: null
+      isFileToUpload: null,
+      isLoading: true
     };
   },
   computed: {
@@ -208,7 +220,12 @@ export default {
     }
   },
   mounted() {
-    this.changeData();
+    this.graphId = parseInt(this.$props.id, 10);
+    if (this.graphId === 0) {
+      this.loadJsonFromUrl();
+      return;
+    }
+    this.loadJsonFromDb();
   },
   methods: {
     nodes() {
@@ -290,7 +307,7 @@ export default {
         }
       }
     },
-    changeData() {
+    loadJsonFromUrl() {
       this.forceSwitch = true;
       // wrapper for fetch basically
       d3.json(this.inputUrl).then(data => {
@@ -299,7 +316,31 @@ export default {
         this.data = JSON.parse(JSON.stringify(data));
         this.items = this.nodes();
         this.setMaxSensitivityValues();
+        this.isLoading = false;
       });
+    },
+    loadJsonFromDb() {
+      return axios
+        .get("http://127.0.0.1:5000/methodOne?id=" + this.graphId, {
+          headers: {
+            "Content-type": "application/json"
+          }
+        })
+        .then(response => {
+          if (response.data.status === "ready") {
+            this.originalData = response.data.graph.nodesData;
+            this.changedData = response.data.graph.nodesData;
+            this.data = response.data.graph.nodesData;
+            this.items = this.nodes();
+            this.setMaxSensitivityValues();
+            this.isLoading = false;
+          } else {
+            setTimeout(this.loadJsonFromDb, 2000);
+          }
+        })
+        .catch(error => {
+          console.log("error: " + error);
+        });
     },
     restore() {
       this.changedData = JSON.parse(JSON.stringify(this.originalData));
