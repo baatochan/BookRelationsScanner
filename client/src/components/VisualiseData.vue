@@ -253,7 +253,20 @@ export default {
         this.mergeError = true;
         return;
       }
-
+      for (let i = 0; i < this.changedData.nodes.length; i++) {
+        if (this.changedData.nodes[i].name === this.nodeNameA) {
+          for (let j = 0; j < this.changedData.nodes.length; j++) {
+            if (this.changedData.nodes[j].name === this.nodeNameB) {
+              const sum = Math.max(
+                100,
+                parseInt(this.changedData.nodes[i].occurrence) +
+                  parseInt(this.changedData.nodes[j].occurrence)
+              );
+              this.changedData.nodes[j].occurrence = sum;
+            }
+          }
+        }
+      }
       const indexA = this.markNode(this.nodeNameA);
       const indexB = this.getIndexOfNode(this.nodeNameB);
       this.mergeLinks(indexA, indexB); // second one stays
@@ -265,19 +278,21 @@ export default {
     mergeLinks(indexA, indexB) {
       for (let i = 0; i < this.changedData.links.length; i++) {
         let linkType = 0;
-        if (this.changedData.links[i].source === indexA) {
+        if (this.changedData.links[i].source === indexA) { // source zgadza się z index A
           linkType += 1;
         }
-        if (this.changedData.links[i].target === indexA) {
+        if (this.changedData.links[i].target === indexA) { // target zgadza się z index A
           linkType += 2;
         }
 
         switch (linkType) {
           case 1:
-            this.changedData.links[i].source = indexB;
+            this.changedData.links[i].source = indexB; // source jest A, zamieniamy na B
+            // znajdź połączenie takie że, (source=indexA i target=i) i dodaj do links[i] jego wartość
             break;
           case 2:
-            this.changedData.links[i].target = indexB;
+            this.changedData.links[i].target = indexB; // target jest A, zamieniamy na B
+            // znajdź takie połączenie, że (target=indexA i source=i) i dodaj do links[i] jego wartość
             break;
           case 3:
             // this.changedData.links.splice(i, 1); dalej powoduje błędy. Na razie zostawię tak, powinno działać bez tego
