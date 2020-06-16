@@ -217,7 +217,7 @@ export default {
       if (this.data && this.data.nodes && this.data.links) {
         filteredData.nodes = this.data.nodes;
         filteredData.links = this.data.links.filter(item => {
-          return item.value <= this.sliderEdges;
+          return item.value >= this.sliderMaxEdges - this.sliderEdges;
         });
         return filteredData;
       }
