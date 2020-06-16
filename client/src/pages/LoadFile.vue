@@ -11,26 +11,26 @@
         <v-col cols="12">
           <v-row>
             <v-col cols="12" align="center">
-              <h1>Load text for analysis</h1>
+              <h1>Wczytaj tekst do analizy</h1>
             </v-col>
           </v-row>
           <v-row v-show="isErrorResponse">
             <v-col cols="12" align="center">
               <p style="color:red;">
-                There was an error while sending your data. Try again.
+                Wystąpił problem w trakcie wysyłania danych. Spróbuj ponownie.
               </p>
             </v-col>
           </v-row>
           <v-row v-show="isSuccessfulResponse">
             <v-col cols="12" align="center">
               <p>
-                Your data has been successfully submitted.
+                Dane zostały poprawnie przesłane do analizy.
               </p>
-              <p>Your submission ID is {{ this.submissionId }}.</p>
+              <p>Numer Twojego zgłoszenia to {{ this.submissionId }}.</p>
               <p>
-                It will be available when processed
+                Po przetworzeniu wynik będzie dostępny
                 <router-link :to="`/visualise-data/${this.submissionId}`"
-                  >here</router-link
+                  >pod tym linkiem</router-link
                 >.
               </p>
             </v-col>
@@ -40,8 +40,8 @@
             <v-col cols="4" align="center">
               <v-text-field
                 v-model="textName"
-                label="Name of text"
-                placeholder="eg. J. Biernat - Architektura komputerów"
+                label="Nazwa tesktu"
+                placeholder="np. J. Biernat - Architektura komputerów"
               ></v-text-field>
             </v-col>
             <v-col cols="4"></v-col>
@@ -54,7 +54,7 @@
                 solo
                 name="textinput-textarea"
                 id="textinput-textarea"
-                label="Paste here book text for analysis"
+                label="Wklej tekst do analizy tutaj"
               ></v-textarea>
             </v-col>
             <v-col cols="2"></v-col>
@@ -62,10 +62,10 @@
           <v-row v-show="isInputBoxShown">
             <v-col cols="12" align="center">
               <p style="margin-bottom: 10px;">
-                or upload a file below. Supported files: txt, pdf.
+                lub załącz plik poniżej. Obsługiwane formaty: txt, pdf.
               </p>
               <label id="text-reader">
-                READ FILE
+                WCZYTAJ PLIK
                 <input
                   id="textinput-file"
                   type="file"
@@ -77,7 +77,7 @@
           <v-row v-show="isInputBoxShown">
             <v-col cols="12" align="center">
               <v-btn color="success" v-on:click="submitData"
-                >Send for analysis</v-btn
+                >Wyślij do analizy</v-btn
               >
             </v-col>
           </v-row>

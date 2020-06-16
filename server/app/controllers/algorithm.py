@@ -8,7 +8,6 @@ from app.models.graph import Graph
 class Algorithm(MethodView):
     def post(self):
         dataFromJson = request.get_json()
-        print("data: ", dataFromJson)
         try:
             n = dataFromJson['name']
             g = Graph(ready=0, nodesData="", name=n,
@@ -16,7 +15,6 @@ class Algorithm(MethodView):
             db.session.add(g)
             db.session.commit()
 
-            # worker z main(dataFromJson['text']) i id g.id
             main(dataFromJson['text'], g.id)
             return str(g.id)
         except Exception as e:

@@ -44,7 +44,6 @@ def main(text, id):
 
     i = 0
     for r in dependendencyTable:
-        # print(r)
         i += 1
 
     r = parseData(dependendencyTable, personsTable)
@@ -97,7 +96,6 @@ def ccl_ann(ccl):
 def getTextInf(textToSend):
     payload = {'text': textToSend, 'lpmn': lpmn, 'user': user_mail}
     headers = {'content-type': 'application/json'}
-    print("request get text info send")
     r = requests.post(url, data=json.dumps(payload), headers=headers)
 
     ccl = r.content.decode('utf-8')
@@ -179,7 +177,6 @@ def floating_window(info, dependendencyTable, personsTable, sentencesAmount):
                                 personsFromWindow, weight)
         windowSize -= windowStep
         weight *= weightStep
-        print("waga: ", weight, ", win size: ", windowSize)
 
 
 def findPersonInWindow(info, indexStart, indexStop, max):
@@ -240,7 +237,6 @@ def parseData(dependendencyTable, personsTable):
     pLen = len(personsTable)
 
     for p in range(0, pLen):
-        print("P ", p)
         if p != 0:
             x += ', '
         x += '{ "name": "' + personsTable[p] + '", '
@@ -249,7 +245,7 @@ def parseData(dependendencyTable, personsTable):
                                   personsTable,
                                   dependendencyTable[p][p])
         x += '", '
-        x += '"value": "' + str(dependendencyTable[p][p])
+        x += '"occurrence": "' + str(dependendencyTable[p][p])
         x += '" }'
     x += '],'
     x += ' "links": ['
@@ -258,14 +254,16 @@ def parseData(dependendencyTable, personsTable):
     data = ''
     z = 0
 
+    max = maxValOfConnection(dependendencyTable, personsTable)
+
     for i in range(0, lenP):
-        print("I ", i)
         for j in range(1+z, lenP):
             data += '{ "source": ' + str(i) + ', "target": ' + str(j) + \
-                    ', "value": ' + str(dependendencyTable[i][j]) + \
-                    ', "type": "' + \
-                    connectionClassification(dependendencyTable, personsTable,
-                                             dependendencyTable[i][j]) + '" }'
+                    ', "value": ' + \
+                str(int(dependendencyTable[i][j] / max * 100)) + \
+                ', "type": "' + \
+                connectionClassification(dependendencyTable, personsTable,
+                                         dependendencyTable[i][j]) + '" }'
             data += ', '
         z += 1
 
