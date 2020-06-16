@@ -328,9 +328,15 @@ export default {
         })
         .then(response => {
           if (response.data.status === "ready") {
-            this.originalData = response.data.graph.nodesData;
-            this.changedData = response.data.graph.nodesData;
-            this.data = response.data.graph.nodesData;
+            this.originalData = JSON.parse(
+              JSON.stringify(response.data.graph.nodesData)
+            );
+            this.changedData = JSON.parse(
+              JSON.stringify(response.data.graph.nodesData)
+            );
+            this.data = JSON.parse(
+              JSON.stringify(response.data.graph.nodesData)
+            );
             this.items = this.nodes();
             this.setMaxSensitivityValues();
             this.isLoading = false;
