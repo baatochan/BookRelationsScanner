@@ -259,10 +259,11 @@ def parseData(dependendencyTable, personsTable):
     for i in range(0, lenP):
         for j in range(1+z, lenP):
             data += '{ "source": ' + str(i) + ', "target": ' + str(j) + \
-                    ', "value": ' + str(int(dependendencyTable[i][j] / max * 100)) + \
-                    ', "type": "' + \
-                    connectionClassification(dependendencyTable, personsTable,
-                                             dependendencyTable[i][j]) + '" }'
+                    ', "value": ' + \
+                str(int(dependendencyTable[i][j] / max * 100)) + \
+                ', "type": "' + \
+                connectionClassification(dependendencyTable, personsTable,
+                                         dependendencyTable[i][j]) + '" }'
             data += ', '
         z += 1
 
