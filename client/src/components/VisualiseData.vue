@@ -278,10 +278,12 @@ export default {
     mergeLinks(indexA, indexB) {
       for (let i = 0; i < this.changedData.links.length; i++) {
         let linkType = 0;
-        if (this.changedData.links[i].source === indexA) { // source zgadza się z index A
+        if (this.changedData.links[i].source === indexA) {
+          // source zgadza się z index A
           linkType += 1;
         }
-        if (this.changedData.links[i].target === indexA) { // target zgadza się z index A
+        if (this.changedData.links[i].target === indexA) {
+          // target zgadza się z index A
           linkType += 2;
         }
 
