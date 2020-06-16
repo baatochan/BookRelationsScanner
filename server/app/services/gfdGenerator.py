@@ -1,9 +1,18 @@
-from flask import json
+from flask import json, send_file
 import requests
 
 
-def main(dataJSON):
-    return dataJSON
+def main(dataJSON, filename):
+    try:
+        f = open("gephi.gdf", "w")
+
+        nodes = "Pawulon działa"
+        f.write(nodes)
+        f.close()
+
+        return send_file('../../gephi.gdf', attachment_filename=filename+'.gdf')
+    except Exception as e:
+        return str(e)
 
 
 # def gdf_gen(dependendencyTable, personsTable):

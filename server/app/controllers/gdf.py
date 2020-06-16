@@ -7,7 +7,7 @@ class Gdf(MethodView):
     def post(self):
         dataFromJson = request.get_json()
         try:
-            d = main(dataFromJson['text'])
+            d = main(dataFromJson['text'], dataFromJson['filename'])
             return d
         except Exception as e:
             print("Failed to add new data: ", e)
