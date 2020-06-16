@@ -218,12 +218,32 @@ export default {
   computed: {
     getDataFilteredBySensitivity() {
       const filteredData = {};
-      if (this.data && this.data.nodes && this.data.links) {
-        filteredData.nodes = this.data.nodes.filter(item => {
-          return item.occurrence <= this.sliderNodes;
+      filteredData.nodes = [];
+      filteredData.links = [];
+      if (
+        this.changedData &&
+        this.changedData.nodes &&
+        this.changedData.links
+      ) {
+        this.data.nodes.forEach(item => {
+          if (item.occurrence <= this.sliderNodes) {
+            filteredData.nodes.push(item);
+          }
         });
-        filteredData.links = this.data.links.filter(item => {
-          return item.value >= this.sliderMaxEdges - this.sliderEdges;
+        this.data.links.forEach(item => {
+          const linkItem = item;
+          if (
+            filteredData.nodes.some(item => {
+              return item.index === linkItem.source.index;
+            }) &&
+            filteredData.nodes.some(item => {
+              return item.index === linkItem.target.index;
+            }) &&
+            item.value <= this.sliderEdges
+          ) {
+            console.log(item);
+            filteredData.links.push(item);
+          }
         });
         return filteredData;
       }
