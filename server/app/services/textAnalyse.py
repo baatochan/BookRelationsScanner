@@ -267,8 +267,8 @@ def parseData(dependendencyTable, personsTable):
                                   personsTable,
                                   dependendencyTable[p][p])
         x += '", '
-        x += '"occurrence": "' + str(int(dependendencyTable[p][p]/maxP*100))
-        x += '" }'
+        x += '"occurrence": ' + str(int(dependendencyTable[p][p]/maxP*100))
+        x += ' }'
     x += '],'
     x += ' "links": ['
 

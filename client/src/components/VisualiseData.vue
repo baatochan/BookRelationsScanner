@@ -226,7 +226,7 @@ export default {
         this.changedData.links
       ) {
         this.data.nodes.forEach(item => {
-          if (item.occurrence <= this.sliderNodes) {
+          if (item.occurrence >= this.sliderMaxNodes - this.sliderNodes) {
             filteredData.nodes.push(item);
           }
         });
@@ -239,7 +239,7 @@ export default {
             filteredData.nodes.some(item => {
               return item.index === linkItem.target.index;
             }) &&
-            item.value <= this.sliderEdges
+            item.value >= this.sliderMaxEdges - this.sliderEdges
           ) {
             console.log(item);
             filteredData.links.push(item);
