@@ -373,6 +373,7 @@ export default {
         })
         .then(response => {
           if (response.data.status === "ready") {
+            // hacky way to deep copy arrays
             this.originalData = JSON.parse(
               JSON.stringify(response.data.graph.nodesData)
             );
