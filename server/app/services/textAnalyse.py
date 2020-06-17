@@ -321,7 +321,7 @@ def connectionClassification(dependendencyTable, personsTable, weight):
 
 
 def maxValOfConnection(dependendencyTable, personsTable):
-    max = 0
+    max = 1
 
     lenP = len(personsTable)
     z = 0
@@ -336,7 +336,7 @@ def maxValOfConnection(dependendencyTable, personsTable):
 
 
 def maxPersonCnt(dependendencyTable, personsTable):
-    max = 0
+    max = 1
 
     lenP = len(personsTable)
 

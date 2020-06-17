@@ -8,18 +8,14 @@ from app.models.graph import Graph
 class Algorithm(MethodView):
     def post(self):
         dataFromJson = request.get_json()
-        try:
-            n = dataFromJson['name']
-            g = Graph(ready=0, nodesData="", name=n,
-                      settings="")
-            db.session.add(g)
-            db.session.commit()
+        n = dataFromJson['name']
+        g = Graph(ready=0, nodesData="", name=n,
+                  settings="")
+        db.session.add(g)
+        db.session.commit()
 
-            main(dataFromJson['text'], g.id)
-            return str(g.id)
-        except Exception as e:
-            print("Failed to add new data: ", e)
-            return str(500)
+        main(dataFromJson['text'], g.id)
+        return str(g.id)
 
     def get(self):
         gID = request.args.get('id')
