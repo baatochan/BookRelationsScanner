@@ -107,6 +107,7 @@ export default {
     loadTextFromFile(ev) {
       this.isLoading = true;
       const file = ev.target.files[0];
+      this.textName = file.name.split(".")[0];
       const reader = new FileReader();
 
       setTimeout(() => {
